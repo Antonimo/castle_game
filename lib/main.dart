@@ -2,6 +2,11 @@ import 'package:castle_game/game_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+// TODO: init settings
+// TODO: disable rotation
+
+
+
 void main() {
   runApp(MyApp());
 }

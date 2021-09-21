@@ -4,11 +4,23 @@ import 'package:flutter/rendering.dart';
 
 class GamePainter extends CustomPainter {
   final List<DrawnLine> lines;
+  final double remainingDistance;
 
-  GamePainter({required this.lines});
+  GamePainter({
+    required this.lines,
+    required this.remainingDistance,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
+    print('size.height: ${size.height} remainingDistance: $remainingDistance');
+
+    drawBases(canvas, size); // TODO: use flutter widgets instead?
+    drawLine(canvas);
+    drawRemainingDistanceIndicator(canvas, size);
+  }
+
+  void drawLine(Canvas canvas) {
     Paint paint = Paint()
       ..color = Colors.redAccent
       ..strokeCap = StrokeCap.round
@@ -24,6 +36,49 @@ class GamePainter extends CustomPainter {
         }
       }
     }
+  }
+
+  void drawRemainingDistanceIndicator(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = Colors.redAccent
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 8.0;
+
+    canvas.drawLine(
+        Offset(4.0, 0.0),
+        Offset(4.0, remainingDistance * size.height / 100),
+        paint,
+    );
+  }
+
+  void drawBases(Canvas canvas, Size size) {
+    Paint myBase = Paint()
+      ..color = Colors.orange
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5.0;
+
+    Paint opponentBase = Paint()
+      ..color = Colors.purple
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5.0;
+
+    canvas.drawCircle(
+      Offset(
+        size.width / 2,
+        85 * size.height / 100,
+      ),
+      30,
+      myBase,
+    );
+
+    canvas.drawCircle(
+      Offset(
+        size.width / 2,
+        15 * size.height / 100,
+      ),
+      30,
+      opponentBase,
+    );
   }
 
   @override
