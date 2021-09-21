@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:castle_game/drawn_line.dart';
 import 'package:castle_game/game_painter.dart';
 import 'package:flutter/material.dart';
 
@@ -10,35 +13,48 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
 
+  Color drawingColor = Colors.black;
+  double drawingWidth = 5.0;
+
+  List<DrawnLine> lines = <DrawnLine>[];
+  DrawnLine line = DrawnLine([], Colors.black, 5.0);
+
+  StreamController<DrawnLine> currentLineStreamController = StreamController<DrawnLine>.broadcast();
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-
-        child: Stack(
-          children: [
-            // Add this
-            buildCurrentPath(context),
-          ],
-        ),
-
+      body: Stack(
+        children: [
+          buildCurrentPath(context),
+        ],
       ),
     );
   }
 
-  GestureDetector buildCurrentPath(BuildContext context) {
+  Widget buildCurrentPath(BuildContext context) {
     return GestureDetector(
       onPanStart: onPanStart,
       onPanUpdate: onPanUpdate,
       onPanEnd: onPanEnd,
       child: RepaintBoundary(
         child: Container(
-          color: Colors.transparent,
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-
-          child: CustomPaint(
-            painter: GamePainter(),
+          padding: EdgeInsets.all(4.0),
+          color: Colors.transparent,
+          alignment: Alignment.topLeft,
+          child: StreamBuilder<DrawnLine>(
+            stream: currentLineStreamController.stream,
+            builder: (context, snapshot) {
+              print(line.path.length);
+              return CustomPaint(
+                painter: GamePainter(
+                  lines: [line],
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -46,31 +62,25 @@ class _GamePageState extends State<GamePage> {
   }
 
   void onPanStart(DragStartDetails details) {
-    print('User started drawing');
-    final box = context.findRenderObject() as RenderBox;
-    final point = box.globalToLocal(details.globalPosition);
-    print(point);
-
-    setState((){
-      line = DrawnLine([point], selectedColor, selectedWidth);
-    });
+    RenderBox? box = context.findRenderObject() as RenderBox;
+    Offset point = box.globalToLocal(details.globalPosition);
+    line = DrawnLine([point], drawingColor, drawingWidth);
   }
 
   void onPanUpdate(DragUpdateDetails details) {
-    final box = context.findRenderObject() as RenderBox;
-    final point = box.globalToLocal(details.globalPosition);
-    print(point);
-    final path = List.from(line.path)..add(point);
-    setState((){
-      line = DrawnLine(path, selectedColor, selectedWidth);
-    });
+    RenderBox box = context.findRenderObject() as RenderBox;
+    Offset point = box.globalToLocal(details.globalPosition);
+
+    List<Offset> path = List.from(line.path)..add(point);
+    line = DrawnLine(path, drawingColor, drawingWidth);
+    currentLineStreamController.add(line);
   }
 
   void onPanEnd(DragEndDetails details) {
-    print('User ended drawing');
-    setState((){
-      print('User ended drawing');
-    });
-  }
+    lines = List.from(lines)..add(line);
 
+    currentLineStreamController.add(line);
+
+    // linesStreamController.add(lines);
+  }
 }
