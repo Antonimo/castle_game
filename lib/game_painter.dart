@@ -1,23 +1,31 @@
 import 'package:castle_game/drawn_line.dart';
+import 'package:castle_game/game.dart';
+import 'package:castle_game/unit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class GamePainter extends CustomPainter {
   final List<DrawnLine> lines;
   final double remainingDistance;
+  final Game game;
 
   GamePainter({
     required this.lines,
     required this.remainingDistance,
+    required this.game,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    print('size.height: ${size.height} remainingDistance: $remainingDistance');
+    // print('size.height: ${size.height} remainingDistance: $remainingDistance');
 
     drawBases(canvas, size); // TODO: use flutter widgets instead?
     drawLine(canvas);
     drawRemainingDistanceIndicator(canvas, size);
+
+    game.units.forEach((unit){
+      drawUnit(canvas, unit);
+    });
   }
 
   void drawLine(Canvas canvas) {
@@ -78,6 +86,19 @@ class GamePainter extends CustomPainter {
       ),
       30,
       opponentBase,
+    );
+  }
+
+  void drawUnit(Canvas canvas, Unit unit){
+    Paint unitPaint = Paint()
+      ..color = Colors.redAccent
+      // ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    canvas.drawCircle(
+      unit.pos,
+      8,
+      unitPaint,
     );
   }
 

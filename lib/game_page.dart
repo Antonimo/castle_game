@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:castle_game/drawn_line.dart';
+import 'package:castle_game/game.dart';
 import 'package:castle_game/game_painter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class GamePage extends StatefulWidget {
   GamePage({Key? key}) : super(key: key);
@@ -13,13 +15,13 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
 
+  final _game = Game();
+
   Color drawingColor = Colors.black;
   double drawingWidth = 5.0;
 
   List<DrawnLine> lines = <DrawnLine>[];
   DrawnLine line = DrawnLine([], Colors.black, 5.0);
-
-  StreamController<DrawnLine> currentLineStreamController = StreamController<DrawnLine>.broadcast();
 
   int count = 0;
   double distance = 0.0;
@@ -28,6 +30,17 @@ class _GamePageState extends State<GamePage> {
   double distanceMax = 1300;
 
   bool drawing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    //Fullscreen display (still including appbar)
+    SystemChrome.setEnabledSystemUIOverlays([]);
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      _game.init(MediaQuery.of(context).size);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +57,9 @@ class _GamePageState extends State<GamePage> {
 
   Widget buildCurrentPath(BuildContext context) {
     return GestureDetector(
+      onTap: () {
+        _game.toggleGame();
+      },
       onPanStart: onPanStart,
       onPanUpdate: onPanUpdate,
       onPanEnd: onPanEnd,
@@ -54,18 +70,16 @@ class _GamePageState extends State<GamePage> {
           // padding: EdgeInsets.all(4.0),
           // color: Colors.transparent,
           // alignment: Alignment.topLeft,
-          child: StreamBuilder<DrawnLine>(
-            stream: currentLineStreamController.stream,
+          child: StreamBuilder<double>(
+            stream: _game.stateStreamController.stream,
             builder: (context, snapshot) {
-
-
               // print('line.path.length ${line.path.length} count: $count distance: $distance');
-
 
               return CustomPaint(
                 painter: GamePainter(
                   lines: [line],
                   remainingDistance: (distanceMax - distance) * 100 / distanceMax,
+                  game: _game,
                 ),
               );
             },
@@ -114,6 +128,10 @@ class _GamePageState extends State<GamePage> {
 
     if ((point - p2Base).distance < 30) {
       drawing = false;
+
+      lines.add(line);
+
+      _game.givePathToUnit(line);
     }
 
 
@@ -125,15 +143,13 @@ class _GamePageState extends State<GamePage> {
       rejectLine();
     }
 
-    currentLineStreamController.add(line);
+    // _game.stateStreamController.add(0);
   }
 
   void onPanEnd(DragEndDetails details) {
     if (!drawing) return;
 
-    lines = List.from(lines)..add(line);
-
-    currentLineStreamController.add(line);
+    // _game.stateStreamController.add(0);
 
     count++;
 
