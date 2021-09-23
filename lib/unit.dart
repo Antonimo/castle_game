@@ -6,19 +6,26 @@ import 'package:flutter/material.dart';
 
 class Unit {
   Player player;
+  MaterialColor color;
   Offset pos;
   DrawnLine? path;
 
+  double maxHp = 60;
+  double hp = 60;
+
+  bool alive = true;
+
   // TODO: relation to player
 
-  double speed = 50; // pixels per second // TODO: use %
+  double speed = 40; // pixels per second // TODO: use %
 
   bool moving = false;
   double? cooldown;
 
-  Unit(this.player, this.pos);
+  Unit(this.player, this.color, this.pos);
 
   void play(double dt, Game game) {
+    if (!alive) return;
 
     if (cooldown != null) {
       cooldown = cooldown! - dt;
@@ -47,10 +54,21 @@ class Unit {
   /// Attack the closest enemy.
   /// If no nearby enemies, check if can engage base
   bool engage(Game game) {
+    // Oppinent Units nearby?
+    for (var unit in game.units) {
+      if (unit.player == player) continue;
+      if ((pos - unit.pos).distance < 17) {
+        // TODO: move to consts
+        attackUnit(unit);
+        return true;
+      }
+    }
+
     // Opponent Base nearby?
     for (var base in game.bases) {
       if (base.player == player) continue;
-      if ((pos - base.pos).distance < 32) { // TODO: move to consts
+      if ((pos - base.pos).distance < 32) {
+        // TODO: move to consts
         attackBase(base);
         return true;
       }
@@ -59,8 +77,24 @@ class Unit {
     return false;
   }
 
-  void attackBase(Base base){
+  void attackUnit(Unit unit) {
+    unit.damage(20); // TODO: random, dmg range
+  }
+
+  void attackBase(Base base) {
     base.damage(20); // TODO: random, dmg range
+  }
+
+  void damage(double damage) {
+    hp -= damage;
+
+    if (hp <= 0) {
+      kill();
+    }
+  }
+
+  void kill() {
+    alive = false;
   }
 
   void move(double dt) {
@@ -80,10 +114,10 @@ class Unit {
 
       final double distanceToPoint = diffOffset.distance;
 
-      print('distanceToPoint: $distanceToPoint remaining distance: $distance');
+      // print('distanceToPoint: $distanceToPoint remaining distance: $distance');
 
       if (distance <= distanceToPoint) {
-        print('distance <= distanceToPoint !!');
+        // print('distance <= distanceToPoint !!');
 
         pos = pos + Offset.fromDirection(diffOffset.direction, distance);
 

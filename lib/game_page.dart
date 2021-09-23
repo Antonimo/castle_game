@@ -14,20 +14,19 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-
   final _game = Game();
 
-  Color drawingColor = Colors.black;
-  double drawingWidth = 5.0;
+  Color drawingColor = Colors.black; // TODO: player / unit colors
+  double drawingWidth = 3.0;
 
-  List<DrawnLine> lines = <DrawnLine>[];
+  // List<DrawnLine> lines = <DrawnLine>[];
   DrawnLine line = DrawnLine([], Colors.black, 5.0);
 
-  int count = 0;
-  double distance = 0.0;
+  // drawing distance
+  // double distance = 0.0;
 
   // TODO: use relative size to screen
-  double distanceMax = 1300;
+  // double distanceMax = 1300;
 
   bool drawing = false;
 
@@ -48,7 +47,7 @@ class _GamePageState extends State<GamePage> {
       body: Stack(
         children: [
           Positioned.fill(
-              child: buildCurrentPath(context),
+            child: buildCurrentPath(context),
           ),
         ],
       ),
@@ -58,7 +57,10 @@ class _GamePageState extends State<GamePage> {
   Widget buildCurrentPath(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        _game.toggleGame();
+        // _game.toggleGame();
+        if (!_game.running) {
+          _game.init(MediaQuery.of(context).size);
+        }
       },
       onPanStart: onPanStart,
       onPanUpdate: onPanUpdate,
@@ -67,7 +69,6 @@ class _GamePageState extends State<GamePage> {
         child: Container(
           // width: MediaQuery.of(context).size.width,
           // height: MediaQuery.of(context).size.height,
-          // padding: EdgeInsets.all(4.0),
           // color: Colors.transparent,
           // alignment: Alignment.topLeft,
           child: StreamBuilder<double>(
@@ -76,11 +77,7 @@ class _GamePageState extends State<GamePage> {
               // print('line.path.length ${line.path.length} count: $count distance: $distance');
 
               return CustomPaint(
-                painter: GamePainter(
-                  lines: [line],
-                  remainingDistance: (distanceMax - distance) * 100 / distanceMax,
-                  game: _game,
-                ),
+                painter: GamePainter(_game, [line]),
               );
             },
           ),
@@ -90,55 +87,54 @@ class _GamePageState extends State<GamePage> {
   }
 
   void onPanStart(DragStartDetails details) {
+    if (!_game.canDrawPath) return;
+
     drawing = true;
 
     RenderBox? box = context.findRenderObject() as RenderBox;
     Offset point = box.globalToLocal(details.globalPosition);
+
     List<Offset> path = [
-      Offset(MediaQuery.of(context).size.width / 2, MediaQuery.of(context).size.height - 10),
+      // Offset(MediaQuery.of(context).size.width / 2, MediaQuery.of(context).size.height - 10),
+      _game.drawPathForPlayer!.startPos,
       point
     ];
+
     line = DrawnLine(
-        path,
-        drawingColor,
-        drawingWidth,
+      path,
+      drawingColor,
+      drawingWidth,
     );
-    count = 1;
-    distance = (path[path.length - 1] - path[path.length - 2]).distance;
+
+    _game.drawDistance = (path[path.length - 1] - path[path.length - 2]).distance;
   }
 
   void onPanUpdate(DragUpdateDetails details) {
     if (!drawing) return;
+
     RenderBox box = context.findRenderObject() as RenderBox;
     Offset point = box.globalToLocal(details.globalPosition);
-
-    count++;
 
     List<Offset> path = List.from(line.path)..add(point);
     line = DrawnLine(path, drawingColor, drawingWidth);
 
-    distance += (path[path.length - 1] - path[path.length - 2]).distance;
+    _game.drawDistance += (path[path.length - 1] - path[path.length - 2]).distance;
 
     // check collision with opponent base
-    final Size screen = MediaQuery.of(context).size;
-    final Offset p2Base = Offset(
-      screen.width / 2,
-      15 * screen.height / 100,
-    );
-
-    if ((point - p2Base).distance < 32) { // TODO: move to consts
-      drawing = false;
-
-      lines.add(line);
-
-      _game.givePathToUnit(line);
+    for(var base in _game.bases){
+      if (base.player == _game.drawPathForPlayer) continue;
+      if ((point - base.pos).distance < 32) {
+        // TODO: move to consts
+        drawing = false;
+        _game.givePathToUnit(line);
+        clearLine();
+      }
     }
 
 
     // TODO: classes for game elements
 
-
-    if (distance > distanceMax) {
+    if (_game.drawDistance > _game.drawDistanceMax) {
       drawing = false;
       rejectLine();
     }
@@ -151,8 +147,6 @@ class _GamePageState extends State<GamePage> {
 
     // _game.stateStreamController.add(0);
 
-    count++;
-
     drawing = false;
     rejectLine();
 
@@ -160,6 +154,11 @@ class _GamePageState extends State<GamePage> {
   }
 
   void rejectLine() {
+    clearLine();
+  }
+
+  void clearLine() {
     line = DrawnLine([], Colors.black, 5.0);
+    _game.drawDistance = 0.0;
   }
 }

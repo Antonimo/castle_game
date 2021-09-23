@@ -8,28 +8,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class GamePainter extends CustomPainter {
-  final List<DrawnLine> lines;
-  final double remainingDistance;
   final Game game;
+  final List<DrawnLine> lines;
 
-  GamePainter({
-    required this.lines,
-    required this.remainingDistance,
-    required this.game,
-  });
+  GamePainter(this.game, this.lines);
 
   @override
   void paint(Canvas canvas, Size size) {
     // print('size.height: ${size.height} remainingDistance: $remainingDistance');
 
-    if (!game.running) return;
+    // if (!game.running) return;
+
+    if (game.canDrawPath) {
+      drawPendingUnit(canvas, game.drawPathForPlayer!.pendingUnit!);
+    }
+
+    game.players.forEach((player) {
+      if (player.pendingUnit != null) {
+        drawUnit(canvas, player.pendingUnit!);
+      }
+    });
 
     game.bases.forEach((base) {
       drawBase(canvas, base);
     });
 
-    drawLine(canvas);
-    drawRemainingDistanceIndicator(canvas, size);
+    if (game.canDrawPath) {
+      drawLine(canvas);
+      drawRemainingDistanceIndicator(canvas, size, game.getDrawRemainingDistance());
+    }
 
     game.units.forEach((unit) {
       drawUnit(canvas, unit);
@@ -54,7 +61,7 @@ class GamePainter extends CustomPainter {
     }
   }
 
-  void drawRemainingDistanceIndicator(Canvas canvas, Size size) {
+  void drawRemainingDistanceIndicator(Canvas canvas, Size size, double remainingDistance) {
     Paint paint = Paint()
       ..color = Colors.redAccent
       ..strokeCap = StrokeCap.round
@@ -76,7 +83,7 @@ class GamePainter extends CustomPainter {
       ..strokeWidth = 30.0
       ..isAntiAlias = true;
 
-    print('hp angle: ${base.hp * 360 / base.maxHp}  radians: ${base.hp * 360 / base.maxHp * pi / 180}');
+    // print('hp angle: ${base.hp * 360 / base.maxHp}  radians: ${base.hp * 360 / base.maxHp * pi / 180}');
 
     canvas.drawArc(
       Rect.fromCircle(center: base.pos, radius: 30.0),
@@ -96,33 +103,40 @@ class GamePainter extends CustomPainter {
   }
 
   void drawUnit(Canvas canvas, Unit unit) {
-    Paint unitPaint = Paint()
+    // HP
+    Paint hpPaint = Paint()
       ..color = Colors.redAccent
-      // ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
+      ..style = PaintingStyle.stroke
+      ..style = PaintingStyle.fill
+      ..strokeWidth = 8.0
+      ..isAntiAlias = true;
 
-    canvas.drawCircle(
-      unit.pos,
-      8,
-      unitPaint,
+    // print('hp angle: ${base.hp * 360 / base.maxHp}  radians: ${base.hp * 360 / base.maxHp * pi / 180}');
+
+    canvas.drawArc(
+      Rect.fromCircle(center: unit.pos, radius: 8.0),
+      -90 * pi / 180,
+      -unit.hp * 360 / unit.maxHp * pi / 180,
+      true,
+      hpPaint,
     );
+
+    // Border
+    Paint unitPaint = Paint()
+      ..color = unit.color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.0;
+
+    canvas.drawCircle(unit.pos, 9, unitPaint);
   }
 
-  void _drawArcWithCenter(
-    Canvas canvas,
-    Paint paint, {
-    required Offset center,
-    required double radius,
-    startRadian = 0.0,
-    sweepRadian = pi,
-  }) {
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      startRadian,
-      sweepRadian,
-      false,
-      paint,
-    );
+  void drawPendingUnit(Canvas canvas, Unit unit) {
+    Paint unitPaint = Paint()
+      ..color = Colors.blueGrey
+      // ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0;
+
+    canvas.drawCircle(unit.pos, 15, unitPaint);
   }
 
   @override
