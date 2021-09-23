@@ -126,7 +126,7 @@ class _GamePageState extends State<GamePage> {
       15 * screen.height / 100,
     );
 
-    if ((point - p2Base).distance < 30) {
+    if ((point - p2Base).distance < 32) { // TODO: move to consts
       drawing = false;
 
       lines.add(line);

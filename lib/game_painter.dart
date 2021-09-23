@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:castle_game/base.dart';
 import 'package:castle_game/drawn_line.dart';
 import 'package:castle_game/game.dart';
 import 'package:castle_game/unit.dart';
@@ -19,11 +22,16 @@ class GamePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // print('size.height: ${size.height} remainingDistance: $remainingDistance');
 
-    drawBases(canvas, size); // TODO: use flutter widgets instead?
+    if (!game.running) return;
+
+    game.bases.forEach((base) {
+      drawBase(canvas, base);
+    });
+
     drawLine(canvas);
     drawRemainingDistanceIndicator(canvas, size);
 
-    game.units.forEach((unit){
+    game.units.forEach((unit) {
       drawUnit(canvas, unit);
     });
   }
@@ -53,43 +61,41 @@ class GamePainter extends CustomPainter {
       ..strokeWidth = 8.0;
 
     canvas.drawLine(
-        Offset(4.0, 0.0),
-        Offset(4.0, remainingDistance * size.height / 100),
-        paint,
+      Offset(4.0, 0.0),
+      Offset(4.0, remainingDistance * size.height / 100),
+      paint,
     );
   }
 
-  void drawBases(Canvas canvas, Size size) {
-    Paint myBase = Paint()
-      ..color = Colors.orange
+  void drawBase(Canvas canvas, Base base) {
+    // HP
+    Paint hpPaint = Paint()
+      ..color = Colors.redAccent
+      ..style = PaintingStyle.stroke
+      ..style = PaintingStyle.fill
+      ..strokeWidth = 30.0
+      ..isAntiAlias = true;
+
+    print('hp angle: ${base.hp * 360 / base.maxHp}  radians: ${base.hp * 360 / base.maxHp * pi / 180}');
+
+    canvas.drawArc(
+      Rect.fromCircle(center: base.pos, radius: 30.0),
+      -90 * pi / 180,
+      -base.hp * 360 / base.maxHp * pi / 180,
+      true,
+      hpPaint,
+    );
+
+    // Border
+    Paint basePaint = Paint()
+      ..color = base.color
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5.0;
 
-    Paint opponentBase = Paint()
-      ..color = Colors.purple
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 5.0;
-
-    canvas.drawCircle(
-      Offset(
-        size.width / 2,
-        85 * size.height / 100,
-      ),
-      30,
-      myBase,
-    );
-
-    canvas.drawCircle(
-      Offset(
-        size.width / 2,
-        15 * size.height / 100,
-      ),
-      30,
-      opponentBase,
-    );
+    canvas.drawCircle(base.pos, 30, basePaint);
   }
 
-  void drawUnit(Canvas canvas, Unit unit){
+  void drawUnit(Canvas canvas, Unit unit) {
     Paint unitPaint = Paint()
       ..color = Colors.redAccent
       // ..style = PaintingStyle.stroke
@@ -99,6 +105,23 @@ class GamePainter extends CustomPainter {
       unit.pos,
       8,
       unitPaint,
+    );
+  }
+
+  void _drawArcWithCenter(
+    Canvas canvas,
+    Paint paint, {
+    required Offset center,
+    required double radius,
+    startRadian = 0.0,
+    sweepRadian = pi,
+  }) {
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      startRadian,
+      sweepRadian,
+      false,
+      paint,
     );
   }
 
