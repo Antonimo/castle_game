@@ -10,6 +10,7 @@ class HostPage extends StatefulWidget {
 }
 
 class _HostPageState extends State<HostPage> {
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +34,8 @@ class _HostPageState extends State<HostPage> {
         title: const Text('Host Online Game'),
       ),
       body: StreamBuilder<double>(
+        // TODO: use separate streams for lobby and for game, so that the lobby pages in the background would not redraw on updares
+        // TODO: do not keep lobby pages in the stack? game page should be the only page?
         stream: HostClient.instance?.game?.stateSubject.stream,
         builder: (context, snapshot) {
           return Center(
@@ -45,6 +48,7 @@ class _HostPageState extends State<HostPage> {
     );
   }
 
+  // TODO: show errors
   List<Widget> _buildPageItems() {
     if (HostClient.instance?.game?.id != null) {
       List<Widget> items = [

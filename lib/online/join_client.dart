@@ -3,36 +3,49 @@ import 'package:castle_game/game/game.dart';
 import 'package:castle_game/game/player.dart';
 import 'package:castle_game/util/logger.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/subjects.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-class HostClient {
-  static const String TAG = '[HostClient] ';
+class JoinClient {
+  static const String TAG = '[JoinClient] ';
 
-  HostClient._privateConstructor();
+  JoinClient._privateConstructor();
 
-  static HostClient? _instance;
+  static JoinClient? _instance;
 
-  static HostClient? get instance => _instance;
+  static JoinClient? get instance => _instance;
 
   static void init() {
     // create client singleton
-    _instance = HostClient._privateConstructor();
+    _instance = JoinClient._privateConstructor();
+  }
 
-    _instance!.createGame();
+  static void join(String gameId) {
+    _instance!.joinGame(gameId);
   }
 
   static void dispose() {
     _instance!._dispose();
   }
 
+  // TODO: lobby stream
+  Subject<double> stateSubject = BehaviorSubject<double>();
+
   Game? _game;
   IO.Socket? socket;
 
   Game? get game => _game;
 
-  void createGame() {
+  void joinGame(String gameId) {
     _game = Game();
+
+    _game!.id = gameId;
+
+    Log.i(TAG, 'joinGame() game id: $gameId');
+
     connect();
+
+    stateSubject.add(0.0);
   }
 
   void connect() {
@@ -45,7 +58,7 @@ class HostClient {
 
     socket!.onConnect((_) {
       print('socket!.onConnect: ${socket?.id}');
-      socket!.emit('createGame');
+      socket!.emit('joinGame', _game?.id);
     });
 
     socket!.on('gameState', (gameState) {
@@ -108,6 +121,7 @@ class HostClient {
     socket!.connect();
   }
 
+  // TODO: add 'game does not exist' error
   // TODO: gameState interface
   void setGameState(dynamic gameState) {
     if (_game == null) return;
@@ -137,6 +151,8 @@ class HostClient {
       }
     }
 
+    stateSubject.add(0.0);
+
     _game!.setState();
   }
 
@@ -147,6 +163,7 @@ class HostClient {
   void _dispose() {
     socket?.dispose();
     _game?.dispose();
+    stateSubject.close();
     _instance = null;
   }
 }

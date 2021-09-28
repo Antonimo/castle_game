@@ -16,6 +16,9 @@ class Game {
 
   String? id;
 
+  bool playing = false;
+
+  // TODO: remove?
   bool running = false;
 
   bool canDrawPath = false;

@@ -1,4 +1,5 @@
 import 'package:castle_game/app_router.dart';
+import 'package:castle_game/pages/game_page.dart';
 import 'package:castle_game/pages/menu_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

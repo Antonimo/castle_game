@@ -36,9 +36,9 @@ class _GamePageState extends State<GamePage> {
     //Fullscreen display (still including appbar)
     SystemChrome.setEnabledSystemUIOverlays([]);
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      _game.init(MediaQuery.of(context).size);
-    });
+    // WidgetsBinding.instance!.addPostFrameCallback((_) async {
+    //   _game.init(MediaQuery.of(context).size);
+    // });
   }
 
   @override
