@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 class Player {
   String name;
-  bool ready;
 
   MaterialColor color;
   Offset startPos;
@@ -14,7 +13,6 @@ class Player {
 
   Player(
     this.name,
-    this.ready,
     this.color,
     this.startPos,
   );

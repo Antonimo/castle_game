@@ -1,5 +1,6 @@
 import 'package:castle_game/game/player.dart';
 import 'package:castle_game/online/host_client.dart';
+import 'package:castle_game/online/online_player.dart';
 import 'package:flutter/material.dart';
 
 class HostPage extends StatefulWidget {
@@ -57,8 +58,8 @@ class _HostPageState extends State<HostPage> {
         SizedBox(height: 32.0),
       ];
 
-      if (HostClient.instance!.game!.players.length > 1) {
-        HostClient.instance!.game?.players.forEach((Player player) {
+      if (HostClient.instance!.players.length > 1) {
+        HostClient.instance!.players.forEach((OnlinePlayer player) {
           items.addAll([
             Text('player ${player.name}: ${player.ready ? 'ready' : 'not ready'}'),
           ]);

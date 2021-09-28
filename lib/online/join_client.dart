@@ -132,16 +132,12 @@ class JoinClient {
     _game!.players.clear();
 
     (gameState['players'] as List).forEach((player) {
-      _game!.players.add(
-        Player(
-          player['name'],
-          player['ready'],
-          Colors.orange,
-          // Offset(size.width / 2, size.height - 10),
-          // TODO: use %, cast to Offset
-          Offset(1, 1),
-        ),
-      );
+      // _game!.players.add(
+      //   OnlinePlayerayer(
+      //     player['name'],
+      //     player['ready'],
+      //   ),
+      // );
     });
 
     if (gameState['playing'] != _game!.playing) {

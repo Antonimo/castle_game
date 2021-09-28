@@ -66,7 +66,7 @@ class _JoinPageState extends State<JoinPage> {
       if (JoinClient.instance!.game!.players.length > 1) {
         JoinClient.instance!.game?.players.forEach((Player player) {
           items.addAll([
-            Text('player ${player.name}: ${player.ready ? 'ready' : 'not ready'}'),
+            // Text('player ${player.name}: ${player.ready ? 'ready' : 'not ready'}'),
           ]);
         });
 

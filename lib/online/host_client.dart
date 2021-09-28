@@ -1,11 +1,13 @@
 import 'package:castle_game/app_router.dart';
 import 'package:castle_game/game/game.dart';
+import 'package:castle_game/game/game_client.dart';
 import 'package:castle_game/game/player.dart';
+import 'package:castle_game/online/online_player.dart';
 import 'package:castle_game/util/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-class HostClient {
+class HostClient implements GameClient {
   static const String TAG = '[HostClient] ';
 
   HostClient._privateConstructor();
@@ -27,6 +29,8 @@ class HostClient {
 
   Game? _game;
   IO.Socket? socket;
+
+  List<OnlinePlayer> players = [];
 
   Game? get game => _game;
 
@@ -115,17 +119,13 @@ class HostClient {
 
     _game!.id = gameState['id'];
 
-    _game!.players.clear();
+    players.clear();
 
     (gameState['players'] as List).forEach((player) {
-      _game!.players.add(
-        Player(
+      players.add(
+        OnlinePlayer(
           player['name'],
           player['ready'],
-          Colors.orange,
-          // Offset(size.width / 2, size.height - 10),
-          // TODO: use %, cast to Offset
-          Offset(1, 1),
         ),
       );
     });
@@ -133,7 +133,7 @@ class HostClient {
     if (gameState['playing'] != _game!.playing) {
       _game!.playing = gameState['playing'];
       if (_game!.playing) {
-        AppRouter.instance.navTo(AppRouter.routeGame);
+        AppRouter.instance.navTo(AppRouter.routeGame, arguments: {'gameClient': this});
       }
     }
 
@@ -142,6 +142,10 @@ class HostClient {
 
   void ready() {
     socket?.emit('ready');
+  }
+
+  void initGame(Size size) {
+    _game?.init(size);
   }
 
   void _dispose() {

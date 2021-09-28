@@ -16,9 +16,10 @@ class Game {
 
   String? id;
 
+  // We are in the game screen
   bool playing = false;
 
-  // TODO: remove?
+  // We are in the game screen and the game is running
   bool running = false;
 
   bool canDrawPath = false;
@@ -26,6 +27,7 @@ class Game {
   double drawDistanceMax = 1300.0;
   double drawDistance = 0.0;
 
+  // TODO: move this to LocalMultiplayerClient
   Player? drawPathForPlayer;
 
   DateTime lastTime = DateTime.now();
@@ -48,26 +50,27 @@ class Game {
   void init(Size size) {
     print('Game init: $size');
 
-    players.clear();
-    units.clear();
-    bases.clear();
+    // players.clear();
+    // units.clear();
+    // bases.clear();
 
     canDrawPath = false;
 
-    // players.add(
-    //   Player(
-    //     'p1',
-    //     Colors.orange,
-    //     Offset(size.width / 2, size.height - 10), // TODO: to consts
-    //   ),
-    // );
-    // players.add(
-    //   Player(
-    //     'p2',
-    //     Colors.purple,
-    //     Offset(size.width / 2, 10), // TODO: to consts
-    //   ),
-    // );
+    players.add(
+      Player(
+        'p1',
+        Colors.orange,
+        // TODO: use %, cast to Offset
+        Offset(size.width / 2, size.height - 10), // TODO: to consts
+      ),
+    );
+    players.add(
+      Player(
+        'p2',
+        Colors.purple,
+        Offset(size.width / 2, 10), // TODO: to consts
+      ),
+    );
 
     players.forEach((player) {
       player.nextUnitCooldown = 3.0;
@@ -97,7 +100,7 @@ class Game {
     }
     while (running) {
       // TODO: optimize the delay time to "race" frames
-      await Future.delayed(Duration(milliseconds: 1000 ~/ 40));
+      await Future.delayed(Duration(milliseconds: 1000 ~/ 400));
 
       final DateTime now = DateTime.now();
       double dt = now.difference(lastTime).inMilliseconds / 1000.0;
@@ -132,11 +135,17 @@ class Game {
   }
 
   void checkForPendingUnits() {
-    final Player? player = players.firstWhereOrNull((player) => player.pendingUnit != null);
+    // final Player? player = players.firstWhereOrNull((player) => player.pendingUnit != null);
+    //
+    // if (player != null) {
+    //   canDrawPath = true;
+    //   drawPathForPlayer = player;
+    // }
 
-    if (player != null) {
+    // fetch my player
+    if(players[0].pendingUnit != null) {
       canDrawPath = true;
-      drawPathForPlayer = player;
+      drawPathForPlayer = players[0];
     }
   }
 

@@ -40,7 +40,7 @@ class AppRouter {
     return _routeStack.last == route;
   }
 
-  void navTo(String routeName) {
+  void navTo(String routeName, {Object? arguments}) {
     _debugPrint('<navTo> (path: $routeName)');
 
     if (_routeStack.isNotEmpty && _routeStack.last == routeName) {
@@ -58,7 +58,7 @@ class AppRouter {
         _push(routeJoin);
         break;
       case routeGame:
-        _push(routeGame);
+        _push(routeGame, arguments: arguments);
         break;
 
       default:
@@ -98,7 +98,7 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => JoinPage());
 
       case routeGame:
-        return MaterialPageRoute(builder: (_) => GamePage());
+        return MaterialPageRoute(builder: (_) => GamePage(arguments: settings.arguments));
 
       default:
         return _onUnknownRoute(settings);
@@ -134,16 +134,16 @@ class AppRouter {
     );
   }
 
-  void _push(String routeName) {
-    appNavigatorKey.currentState!.pushNamed(routeName);
+  void _push(String routeName, {Object? arguments}) {
+    appNavigatorKey.currentState!.pushNamed(routeName, arguments: arguments);
   }
 
   // void _replace(String routeName, {Object arguments}) {
   //   appNavigatorKey.currentState.pushReplacementNamed(routeName, arguments: arguments);
   // }
 
-  void _pushAndRemoveUntil(String routeName) {
-    appNavigatorKey.currentState!.pushNamedAndRemoveUntil(routeName, (routeName) => false);
+  void _pushAndRemoveUntil(String routeName, {Object? arguments}) {
+    appNavigatorKey.currentState!.pushNamedAndRemoveUntil(routeName, (routeName) => false, arguments: arguments);
   }
 
   static void _debugPrint(String text) {
