@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:castle_game/drawn_line.dart';
-import 'package:castle_game/game.dart';
-import 'package:castle_game/game_painter.dart';
+import 'package:castle_game/game/drawn_line.dart';
+import 'package:castle_game/game/game.dart';
+import 'package:castle_game/game/game_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -72,7 +72,7 @@ class _GamePageState extends State<GamePage> {
           // color: Colors.transparent,
           // alignment: Alignment.topLeft,
           child: StreamBuilder<double>(
-            stream: _game.stateStreamController.stream,
+            stream: _game.stateSubject.stream,
             builder: (context, snapshot) {
               // print('line.path.length ${line.path.length} count: $count distance: $distance');
 

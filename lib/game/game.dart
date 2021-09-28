@@ -4,16 +4,19 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
-import 'package:castle_game/base.dart';
-import 'package:castle_game/drawn_line.dart';
-import 'package:castle_game/player.dart';
-import 'package:castle_game/unit.dart';
+import 'package:castle_game/game/base.dart';
+import 'package:castle_game/game/drawn_line.dart';
+import 'package:castle_game/game/player.dart';
+import 'package:castle_game/game/unit.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/subjects.dart';
 
 class Game {
-  StreamController<double> stateStreamController = StreamController<double>.broadcast();
+  Subject<double> stateSubject = BehaviorSubject<double>();
 
-  var running = false;
+  String? id;
+
+  bool running = false;
 
   bool canDrawPath = false;
 
@@ -30,6 +33,10 @@ class Game {
 
   List<Unit> units = [];
 
+  void setState() {
+    stateSubject.add(0.0);
+  }
+
   void toggleGame() {
     running = !running;
     _runTheGame();
@@ -44,20 +51,20 @@ class Game {
 
     canDrawPath = false;
 
-    players.add(
-      Player(
-        'p1',
-        Colors.orange,
-        Offset(size.width / 2, size.height - 10), // TODO: to consts
-      ),
-    );
-    players.add(
-      Player(
-        'p2',
-        Colors.purple,
-        Offset(size.width / 2, 10), // TODO: to consts
-      ),
-    );
+    // players.add(
+    //   Player(
+    //     'p1',
+    //     Colors.orange,
+    //     Offset(size.width / 2, size.height - 10), // TODO: to consts
+    //   ),
+    // );
+    // players.add(
+    //   Player(
+    //     'p2',
+    //     Colors.purple,
+    //     Offset(size.width / 2, 10), // TODO: to consts
+    //   ),
+    // );
 
     players.forEach((player) {
       player.nextUnitCooldown = 3.0;
@@ -117,7 +124,7 @@ class Game {
       }
 
       lastTime = now;
-      stateStreamController.add(0);
+      stateSubject.add(0);
     }
   }
 
@@ -162,5 +169,9 @@ class Game {
 
   double getDrawRemainingDistance() {
     return (drawDistanceMax - drawDistance) * 100 / drawDistanceMax;
+  }
+
+  void dispose() {
+    stateSubject.close();
   }
 }

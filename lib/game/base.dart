@@ -1,5 +1,5 @@
 
-import 'package:castle_game/player.dart';
+import 'package:castle_game/game/player.dart';
 import 'package:flutter/material.dart';
 
 class Base {

@@ -1,16 +1,23 @@
-import 'package:castle_game/game.dart';
-import 'package:castle_game/unit.dart';
+import 'package:castle_game/game/game.dart';
+import 'package:castle_game/game/unit.dart';
 import 'package:flutter/material.dart';
 
 class Player {
   String name;
+  bool ready;
+
   MaterialColor color;
   Offset startPos;
 
   double? nextUnitCooldown;
   Unit? pendingUnit;
 
-  Player(this.name, this.color, this.startPos);
+  Player(
+    this.name,
+    this.ready,
+    this.color,
+    this.startPos,
+  );
 
   void play(double dt, Game game) {
     if (nextUnitCooldown != null) {

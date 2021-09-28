@@ -1,7 +1,7 @@
-import 'package:castle_game/base.dart';
-import 'package:castle_game/drawn_line.dart';
-import 'package:castle_game/game.dart';
-import 'package:castle_game/player.dart';
+import 'package:castle_game/game/base.dart';
+import 'package:castle_game/game/drawn_line.dart';
+import 'package:castle_game/game/game.dart';
+import 'package:castle_game/game/player.dart';
 import 'package:flutter/material.dart';
 
 class Unit {

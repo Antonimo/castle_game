@@ -1,6 +1,6 @@
 import 'package:castle_game/app_consts.dart';
-import 'package:castle_game/app_navigator_observer.dart';
-import 'package:castle_game/logger.dart';
+import 'package:castle_game/util/app_navigator_observer.dart';
+import 'package:castle_game/util/logger.dart';
 import 'package:castle_game/pages/game_page.dart';
 import 'package:castle_game/pages/host_page.dart';
 import 'package:castle_game/pages/join_page.dart';
