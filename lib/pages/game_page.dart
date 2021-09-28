@@ -1,9 +1,8 @@
-import 'dart:async';
 
 import 'package:castle_game/game/drawn_line.dart';
-import 'package:castle_game/game/game.dart';
 import 'package:castle_game/game/game_client.dart';
 import 'package:castle_game/game/game_painter.dart';
+import 'package:castle_game/util/json_offset.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -110,7 +109,7 @@ class _GamePageState extends State<GamePage> {
 
     List<Offset> path = [
       // Offset(MediaQuery.of(context).size.width / 2, MediaQuery.of(context).size.height - 10),
-      _gameClient!.game!.drawPathForPlayer!.startPos,
+      _gameClient!.game!.drawPathForPlayer!.startPos.adjust(_gameClient!.game?.adjust),
       point
     ];
 
@@ -134,13 +133,22 @@ class _GamePageState extends State<GamePage> {
 
     _gameClient!.game!.drawDistance += (path[path.length - 1] - path[path.length - 2]).distance;
 
+    if (_gameClient?.game?.drawPathForPlayer == null) {
+      drawing = false;
+      rejectLine();
+      return;
+    }
+
     // check collision with opponent base
     for(var base in _gameClient!.game!.bases){
-      if (base.player == _gameClient!.game!.drawPathForPlayer) continue;
-      if ((point - base.pos).distance < 32) {
+      if (_gameClient?.game?.drawPathForPlayer == null) continue;
+      if (base.player == _gameClient!.game!.drawPathForPlayer!.id) continue;
+      if ((point - base.pos).distance < 32 * (_gameClient!.game!.adjust == null ? 1 : _gameClient!.game!.adjust!.shortestSide)) {
         // TODO: move to consts
         drawing = false;
-        _gameClient!.game!.givePathToUnit(line);
+        _gameClient!.givePathToUnit(line, _gameClient!.game!.drawPathForPlayer!);
+        _gameClient!.game!.drawPathForPlayer = null;
+        _gameClient!.game!.canDrawPath = false;
         clearLine();
       }
     }

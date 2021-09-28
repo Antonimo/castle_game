@@ -1,4 +1,3 @@
-import 'package:castle_game/game/player.dart';
 import 'package:castle_game/online/host_client.dart';
 import 'package:castle_game/online/online_player.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +14,6 @@ class _HostPageState extends State<HostPage> {
   @override
   void initState() {
     super.initState();
-
-    print('_HostPageState initState()');
 
     HostClient.init();
   }
@@ -37,7 +34,7 @@ class _HostPageState extends State<HostPage> {
       body: StreamBuilder<double>(
         // TODO: use separate streams for lobby and for game, so that the lobby pages in the background would not redraw on updares
         // TODO: do not keep lobby pages in the stack? game page should be the only page?
-        stream: HostClient.instance?.game?.stateSubject.stream,
+        stream: HostClient.instance?.stateSubject.stream,
         builder: (context, snapshot) {
           return Center(
             child: Column(

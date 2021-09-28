@@ -1,11 +1,11 @@
 import 'package:castle_game/game/base.dart';
 import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game.dart';
-import 'package:castle_game/game/player.dart';
+import 'package:castle_game/util/json_offset.dart';
 import 'package:flutter/material.dart';
 
 class Unit {
-  Player player;
+  String player;
   MaterialColor color;
   Offset pos;
   DrawnLine? path;
@@ -23,6 +23,40 @@ class Unit {
   double? cooldown;
 
   Unit(this.player, this.color, this.pos);
+
+  Map toPlayState() {
+    return {
+      'player': player,
+      // 'color': ,
+      'pos': pos.toJson(),
+      'path': path?.toPlayState(),
+      'maxHp': maxHp,
+      'hp': hp,
+      'alive': alive,
+      'speed': speed,
+      'moving': moving,
+      'cooldown': cooldown,
+    };
+  }
+
+  static Unit? fromPlayState(playState, {Size? flipCoords}) {
+    if (playState == null) return null;
+
+    final unit = Unit(
+      playState['player'],
+      // TODO: colors
+      Colors.orange,
+      Offset.zero.fromJson(playState['pos']).flip(flipCoords),
+    );
+    unit.path = DrawnLine.fromPlayState(playState['path'], flipCoords: flipCoords);
+    unit.maxHp = double.parse(playState['maxHp'].toString());
+    unit.hp = double.parse(playState['hp'].toString());
+    unit.alive = playState['alive'];
+    unit.speed = double.parse(playState['speed'].toString());
+    unit.moving = playState['moving'];
+    unit.cooldown = playState['cooldown'] == null ? null : double.parse(playState['cooldown'].toString());
+    return unit;
+  }
 
   void play(double dt, Game game) {
     if (!alive) return;

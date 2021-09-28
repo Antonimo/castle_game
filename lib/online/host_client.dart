@@ -1,10 +1,16 @@
+import 'package:castle_game/app_consts.dart';
 import 'package:castle_game/app_router.dart';
+import 'package:castle_game/game/base.dart';
+import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game.dart';
 import 'package:castle_game/game/game_client.dart';
 import 'package:castle_game/game/player.dart';
+import 'package:castle_game/game/unit.dart';
 import 'package:castle_game/online/online_player.dart';
 import 'package:castle_game/util/logger.dart';
+import 'package:castle_game/util/json_size.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/subjects.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class HostClient implements GameClient {
@@ -27,6 +33,8 @@ class HostClient implements GameClient {
     _instance!._dispose();
   }
 
+  Subject<double> stateSubject = BehaviorSubject<double>();
+
   Game? _game;
   IO.Socket? socket;
 
@@ -36,6 +44,7 @@ class HostClient implements GameClient {
 
   void createGame() {
     _game = Game();
+    _game!.player = 'p1';
     connect();
   }
 
@@ -43,7 +52,7 @@ class HostClient implements GameClient {
     Log.i(TAG, 'connect()');
 
     socket = IO.io(
-      'http://10.0.2.2:8001',
+      AppConsts.SRV_URL,
       IO.OptionBuilder().setTransports(["websocket"]).disableAutoConnect().build(),
     );
 
@@ -53,10 +62,14 @@ class HostClient implements GameClient {
     });
 
     socket!.on('gameState', (gameState) {
-      Log.i(TAG, 'gameState');
-      Log.i(TAG, gameState);
+      // Log.i(TAG, 'gameState');
+      // Log.i(TAG, gameState);
 
       setGameState(gameState);
+    });
+
+    socket!.on('attachPathToPendingUnit', (data) {
+      attachPathToPendingUnit(data);
     });
 
     socket!.onDisconnect((_) {
@@ -134,9 +147,11 @@ class HostClient implements GameClient {
       _game!.playing = gameState['playing'];
       if (_game!.playing) {
         AppRouter.instance.navTo(AppRouter.routeGame, arguments: {'gameClient': this});
+        initPlayingGameStateBroadcastLoop();
       }
     }
 
+    stateSubject.add(0.0);
     _game!.setState();
   }
 
@@ -148,9 +163,59 @@ class HostClient implements GameClient {
     _game?.init(size);
   }
 
+  Future<void> initPlayingGameStateBroadcastLoop() async {
+    while (_game != null && _game!.playing) {
+      await Future.delayed(Duration(milliseconds: 1000 ~/ 400));
+
+      socket?.emit('playingGameState', buildPlayingGameState());
+    }
+  }
+
+  Map buildPlayingGameState() {
+    Map playingGameState = {
+      'size': _game!.size?.toJson(),
+      'players': [],
+      'bases': [],
+      'units': [],
+    };
+
+    _game!.players.forEach((Player player) {
+      playingGameState['players'].add(player.toPlayState());
+    });
+    _game!.bases.forEach((Base base) {
+      playingGameState['bases'].add(base.toPlayState());
+    });
+    _game!.units.forEach((Unit unit) {
+      playingGameState['units'].add(unit.toPlayState());
+    });
+
+    return playingGameState;
+  }
+
+  void attachPathToPendingUnit(dynamic data) {
+    if (_game == null) return;
+    final _data = data as Map;
+    final _player = _game!.players.firstWhere((Player player) => player.id == _data['player']);
+    if (_player.pendingUnit == null) return;
+    _game!.givePathToUnit(
+      DrawnLine.fromPlayState(_data['path'])!,
+      _player,
+    );
+  }
+
+  void givePathToUnit(DrawnLine line, Player player) {
+    if (_game == null) return;
+
+    _game!.givePathToUnit(line, player);
+
+    _game!.drawPathForPlayer = null;
+    _game!.canDrawPath = false;
+  }
+
   void _dispose() {
     socket?.dispose();
     _game?.dispose();
+    stateSubject.close();
     _instance = null;
   }
 }

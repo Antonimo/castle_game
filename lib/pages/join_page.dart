@@ -1,6 +1,5 @@
-import 'package:castle_game/game/player.dart';
-import 'package:castle_game/online/host_client.dart';
 import 'package:castle_game/online/join_client.dart';
+import 'package:castle_game/online/online_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -19,7 +18,6 @@ class _JoinPageState extends State<JoinPage> {
   void initState() {
     super.initState();
 
-    print('_JoinPageState initState()');
     JoinClient.init();
   }
 
@@ -63,10 +61,10 @@ class _JoinPageState extends State<JoinPage> {
         SizedBox(height: 32.0),
       ];
 
-      if (JoinClient.instance!.game!.players.length > 1) {
-        JoinClient.instance!.game?.players.forEach((Player player) {
+      if (JoinClient.instance!.players.length > 1) {
+        JoinClient.instance!.players.forEach((OnlinePlayer player) {
           items.addAll([
-            // Text('player ${player.name}: ${player.ready ? 'ready' : 'not ready'}'),
+            Text('player ${player.name}: ${player.ready ? 'ready' : 'not ready'}'),
           ]);
         });
 

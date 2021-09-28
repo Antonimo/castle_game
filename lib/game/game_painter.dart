@@ -4,6 +4,7 @@ import 'package:castle_game/game/base.dart';
 import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game.dart';
 import 'package:castle_game/game/unit.dart';
+import 'package:castle_game/util/json_offset.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -15,23 +16,23 @@ class GamePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // print('size.height: ${size.height} remainingDistance: $remainingDistance');
+    // print('GamePainter paint() size.height: ${size.height}');
 
     // if (!game.running) return;
 
     if (game.canDrawPath) {
       // Highlight the pending unit
-      drawPendingUnit(canvas, game.drawPathForPlayer!.pendingUnit!);
+      drawPendingUnit(canvas, game.drawPathForPlayer!.pendingUnit!, game.adjust);
     }
 
     game.players.forEach((player) {
       if (player.pendingUnit != null) {
-        drawUnit(canvas, player.pendingUnit!);
+        drawUnit(canvas, player.pendingUnit!, game.adjust);
       }
     });
 
     game.bases.forEach((base) {
-      drawBase(canvas, base);
+      drawBase(canvas, base, game.adjust);
     });
 
     if (game.canDrawPath) {
@@ -40,7 +41,7 @@ class GamePainter extends CustomPainter {
     }
 
     game.units.forEach((unit) {
-      drawUnit(canvas, unit);
+      drawUnit(canvas, unit, game.adjust);
     });
   }
 
@@ -75,7 +76,7 @@ class GamePainter extends CustomPainter {
     );
   }
 
-  void drawBase(Canvas canvas, Base base) {
+  void drawBase(Canvas canvas, Base base, Size? adjust) {
     // HP
     Paint hpPaint = Paint()
       ..color = Colors.redAccent
@@ -87,7 +88,8 @@ class GamePainter extends CustomPainter {
     // print('hp angle: ${base.hp * 360 / base.maxHp}  radians: ${base.hp * 360 / base.maxHp * pi / 180}');
 
     canvas.drawArc(
-      Rect.fromCircle(center: base.pos, radius: 30.0),
+      // TODO: adjust sizes of all elements too.
+      Rect.fromCircle(center: base.pos.adjust(adjust), radius: 30.0 * (adjust == null ? 1 : adjust.shortestSide)),
       -90 * pi / 180,
       -base.hp * 360 / base.maxHp * pi / 180,
       true,
@@ -100,10 +102,10 @@ class GamePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5.0;
 
-    canvas.drawCircle(base.pos, 30, basePaint);
+    canvas.drawCircle(base.pos.adjust(adjust), 30.0 * (adjust == null ? 1 : adjust.shortestSide), basePaint);
   }
 
-  void drawUnit(Canvas canvas, Unit unit) {
+  void drawUnit(Canvas canvas, Unit unit, Size? adjust) {
     // HP
     Paint hpPaint = Paint()
       ..color = Colors.redAccent
@@ -115,7 +117,7 @@ class GamePainter extends CustomPainter {
     // print('hp angle: ${base.hp * 360 / base.maxHp}  radians: ${base.hp * 360 / base.maxHp * pi / 180}');
 
     canvas.drawArc(
-      Rect.fromCircle(center: unit.pos, radius: 8.0),
+      Rect.fromCircle(center: unit.pos.adjust(adjust), radius: 8.0),
       -90 * pi / 180,
       -unit.hp * 360 / unit.maxHp * pi / 180,
       true,
@@ -128,16 +130,16 @@ class GamePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.0;
 
-    canvas.drawCircle(unit.pos, 9, unitPaint);
+    canvas.drawCircle(unit.pos.adjust(adjust), 9, unitPaint);
   }
 
-  void drawPendingUnit(Canvas canvas, Unit unit) {
+  void drawPendingUnit(Canvas canvas, Unit unit, Size? adjust) {
     Paint unitPaint = Paint()
       ..color = Colors.blueGrey
       // ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
 
-    canvas.drawCircle(unit.pos, 15, unitPaint);
+    canvas.drawCircle(unit.pos.adjust(adjust), 15, unitPaint);
   }
 
   @override
