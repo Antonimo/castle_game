@@ -31,7 +31,9 @@ class HostClient implements GameClient {
   }
 
   static void dispose() {
+    Log.i(TAG, 'dispose()');
     _instance!._dispose();
+    _instance = null;
   }
 
   Subject<double> stateSubject = BehaviorSubject<double>();
@@ -131,7 +133,11 @@ class HostClient implements GameClient {
     if (_game == null) return;
     // TODO: if no game, clear everything and go back to main menu?
 
-    _game!.id = gameState['id'];
+    Log.i(TAG, 'setGameState() current game id: ${_game!.id}  gameState: ${gameState['id']}');
+
+    if (_game!.id == null) {
+      _game!.id = gameState['id'];
+    }
 
     players.clear();
 
@@ -169,6 +175,8 @@ class HostClient implements GameClient {
     while (_game != null && _game!.playing) {
       await Future.delayed(Duration(milliseconds: 1000 ~/ GameConsts.PLAYING_GAME_STATE_EMITS_PER_SECOND));
 
+      Log.i(TAG, 'initPlayingGameStateBroadcastLoop() current game id: ${_game!.id} ');
+
       socket?.emit('playingGameState', buildPlayingGameState());
     }
   }
@@ -176,6 +184,7 @@ class HostClient implements GameClient {
   Map buildPlayingGameState() {
     Map playingGameState = {
       'size': _game!.size?.toJson(),
+      'id': _game!.id,
       'players': [],
       'bases': [],
       'units': [],
@@ -216,8 +225,9 @@ class HostClient implements GameClient {
 
   void _dispose() {
     socket?.dispose();
+    socket = null;
     _game?.dispose();
+    _game = null;
     stateSubject.close();
-    _instance = null;
   }
 }

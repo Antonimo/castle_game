@@ -36,6 +36,7 @@ class JoinClient implements GameClient {
 
   static void dispose() {
     _instance!._dispose();
+    _instance = null;
   }
 
   Subject<double> stateSubject = BehaviorSubject<double>();
@@ -71,11 +72,13 @@ class JoinClient implements GameClient {
 
     socket!.onConnect((_) {
       print('socket!.onConnect: ${socket?.id}');
+      print('emit( joinGame, ${_game?.id} )');
+
       socket!.emit('joinGame', _game?.id);
     });
 
     socket!.on('gameState', (gameState) {
-      // Log.i(TAG, 'gameState');
+      Log.i(TAG, 'gameState');
       // Log.d(TAG, gameState);
 
       setGameState(gameState);
@@ -142,7 +145,11 @@ class JoinClient implements GameClient {
     if (_game == null) return;
     // TODO: if no game, clear everything and go back to main menu?
 
-    _game!.id = gameState['id'];
+    Log.i(TAG, 'setGameState() current game id: ${_game!.id}  gameState: ${gameState['id']}');
+
+    if (_game!.id == null) {
+      _game!.id = gameState['id'];
+    }
 
     players.clear();
 
@@ -193,7 +200,7 @@ class JoinClient implements GameClient {
 
     _game?.hostSize = Size.zero.fromJson(gameState['playingState']['size']);
 
-    if (game?.hostSize != null) {
+    if (game?.hostSize != null && game?.size != null) {
       _game?.adjust = Size(
         game!.size!.width / game!.hostSize!.width,
         game!.size!.height / game!.hostSize!.height,
@@ -233,8 +240,9 @@ class JoinClient implements GameClient {
 
   void _dispose() {
     socket?.dispose();
+    socket = null;
     _game?.dispose();
+    _game = null;
     stateSubject.close();
-    _instance = null;
   }
 }
