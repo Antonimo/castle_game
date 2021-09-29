@@ -7,7 +7,7 @@ class Player {
   String id;
   String name;
 
-  MaterialColor color;
+  Color color;
   Offset startPos;
 
   double? nextUnitCooldown;
@@ -24,6 +24,7 @@ class Player {
     return {
       'id': id,
       'name': name,
+      'color': color.value,
       'startPos': startPos.toJson(),
       'nextUnitCooldown': nextUnitCooldown,
       'pendingUnit': pendingUnit?.toPlayState(),
@@ -34,9 +35,7 @@ class Player {
     final player = Player(
       playState['id'],
       playState['name'],
-      // TODO: colors,
-      Colors.orange,
-      // TODO: startpos
+      Color(playState['color']),
       Offset.zero.fromJson(playState['startPos']).flip(flipCoords),
     );
     if (playState['nextUnitCooldown'] != null) {

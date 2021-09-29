@@ -4,11 +4,12 @@ import 'package:castle_game/game/base.dart';
 import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game.dart';
 import 'package:castle_game/game/game_client.dart';
+import 'package:castle_game/game/game_consts.dart';
 import 'package:castle_game/game/player.dart';
 import 'package:castle_game/game/unit.dart';
 import 'package:castle_game/online/online_player.dart';
-import 'package:castle_game/util/logger.dart';
 import 'package:castle_game/util/json_size.dart';
+import 'package:castle_game/util/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -44,7 +45,7 @@ class HostClient implements GameClient {
 
   void createGame() {
     _game = Game();
-    _game!.player = 'p1';
+    _game!.player = 'p1'; // TODO: players ids system
     connect();
   }
 
@@ -161,11 +162,12 @@ class HostClient implements GameClient {
 
   void initGame(Size size) {
     _game?.init(size);
+    _game?.initObjects();
   }
 
   Future<void> initPlayingGameStateBroadcastLoop() async {
     while (_game != null && _game!.playing) {
-      await Future.delayed(Duration(milliseconds: 1000 ~/ 400));
+      await Future.delayed(Duration(milliseconds: 1000 ~/ GameConsts.PLAYING_GAME_STATE_EMITS_PER_SECOND));
 
       socket?.emit('playingGameState', buildPlayingGameState());
     }

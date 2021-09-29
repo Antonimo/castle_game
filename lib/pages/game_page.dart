@@ -1,6 +1,6 @@
-
 import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game_client.dart';
+import 'package:castle_game/game/game_consts.dart';
 import 'package:castle_game/game/game_painter.dart';
 import 'package:castle_game/util/json_offset.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +16,10 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
+  static const String TAG = '[_GamePageState] ';
 
   GameClient? _gameClient;
+
   // final _game = Game();
 
   Color drawingColor = Colors.black; // TODO: player / unit colors
@@ -69,12 +71,13 @@ class _GamePageState extends State<GamePage> {
 
   Widget buildCurrentPath(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // _game.toggleGame();
-        if (!_gameClient!.game!.running) {
-          // _gameClient!.game!.init(MediaQuery.of(context).size);
-        }
-      },
+      // TODO: restart game option
+      // onTap: () {
+      //   // _game.toggleGame();
+      //   if (!_gameClient!.game!.running) {
+      //     // _gameClient!.game!.init(MediaQuery.of(context).size);
+      //   }
+      // },
       onPanStart: onPanStart,
       onPanUpdate: onPanUpdate,
       onPanEnd: onPanEnd,
@@ -133,26 +136,33 @@ class _GamePageState extends State<GamePage> {
 
     _gameClient!.game!.drawDistance += (path[path.length - 1] - path[path.length - 2]).distance;
 
-    if (_gameClient?.game?.drawPathForPlayer == null) {
+    if (!_gameClient!.game!.canDrawPath || _gameClient?.game?.drawPathForPlayer == null) {
       drawing = false;
+      _gameClient!.game!.canDrawPath = false;
+      _gameClient?.game?.drawPathForPlayer = null;
       rejectLine();
       return;
     }
 
     // check collision with opponent base
-    for(var base in _gameClient!.game!.bases){
-      if (_gameClient?.game?.drawPathForPlayer == null) continue;
+    for (var base in _gameClient!.game!.bases) {
+      if (_gameClient?.game?.drawPathForPlayer == null) break;
       if (base.player == _gameClient!.game!.drawPathForPlayer!.id) continue;
-      if ((point - base.pos).distance < 32 * (_gameClient!.game!.adjust == null ? 1 : _gameClient!.game!.adjust!.shortestSide)) {
+
+      // Log.i(TAG, 'onPanUpdate distance: ${(point - base.pos.adjust(_gameClient!.game!.adjust!)).distance} adjust: ${_gameClient!.game!.adjust!.shortestSide} adjusted: ${(30 * (_gameClient!.game!.adjust == null ? 1 : _gameClient!.game!.adjust!.shortestSide))}');
+
+      if ((point - base.pos.adjust(_gameClient?.game?.adjust)).distance <
+          ((GameConsts.BASE_SIZE + 1) * (_gameClient!.game?.adjust == null ? 1 : _gameClient!.game!.adjust!.shortestSide))) {
+        // Log.i(TAG, 'onPanUpdate distance: ${(point - base.pos.adjust(_gameClient!.game!.adjust!)).distance} adjust: ${_gameClient!.game!.adjust!.shortestSide} adjusted: ${(30 * (_gameClient!.game!.adjust == null ? 1 : _gameClient!.game!.adjust!.shortestSide))}');
+
         // TODO: move to consts
         drawing = false;
         _gameClient!.givePathToUnit(line, _gameClient!.game!.drawPathForPlayer!);
         _gameClient!.game!.drawPathForPlayer = null;
-        _gameClient!.game!.canDrawPath = false;
+        _gameClient!.game!.canDrawPath = false; // TODO: DRY
         clearLine();
       }
     }
-
 
     // TODO: classes for game elements
 

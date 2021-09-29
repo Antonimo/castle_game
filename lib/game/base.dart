@@ -1,14 +1,14 @@
-
+import 'package:castle_game/game/game_consts.dart';
 import 'package:castle_game/util/json_offset.dart';
 import 'package:flutter/material.dart';
 
 class Base {
   String player;
   Offset pos;
-  MaterialColor color;
+  Color color;
 
-  double maxHp = 300;
-  double hp = 300;
+  double maxHp = GameConsts.BASE_MAX_HP;
+  double hp = GameConsts.BASE_MAX_HP;
 
   Base(this.player, this.pos, this.color);
 
@@ -16,7 +16,7 @@ class Base {
     return {
       'player': player,
       'pos': pos.toJson(),
-      // 'color': color,
+      'color': color.value,
       'maxHp': maxHp,
       'hp': hp,
     };
@@ -26,15 +26,14 @@ class Base {
     final base = Base(
       playState['player'],
       Offset.zero.fromJson(playState['pos']).flip(flipCoords),
-      // TODO: colors
-      Colors.orange,
+      Color(playState['color']),
     );
     base.maxHp = (playState['maxHp'] as num).toDouble();
     base.hp = (playState['hp'] as num).toDouble();
     return base;
   }
 
-  void damage(double damage){
+  void damage(double damage) {
     hp -= damage;
   }
 }

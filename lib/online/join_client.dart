@@ -6,14 +6,16 @@ import 'package:castle_game/game/game.dart';
 import 'package:castle_game/game/game_client.dart';
 import 'package:castle_game/game/player.dart';
 import 'package:castle_game/game/unit.dart';
-import 'package:castle_game/util/logger.dart';
 import 'package:castle_game/util/json_size.dart';
+import 'package:castle_game/util/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import 'online_player.dart';
 
+
+// TODO: another game - bug?
 class JoinClient implements GameClient {
   static const String TAG = '[JoinClient] ';
 
@@ -202,11 +204,10 @@ class JoinClient implements GameClient {
       );
       // print('adjust hostSize: ${game.hostSize} size: ${game.size} adjust: ${adjust}');
     }
-    
+
     List<Player> players = [];
     List<Base> bases = [];
     List<Unit> units = [];
-
 
     (gameState['playingState']['players'] as List).forEach((player) {
       players.add(Player.fromPlayState(player, flipCoords: _game!.hostSize));
@@ -229,7 +230,7 @@ class JoinClient implements GameClient {
       'player': player.id,
     });
   }
-  
+
   void _dispose() {
     socket?.dispose();
     _game?.dispose();

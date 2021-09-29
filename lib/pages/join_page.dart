@@ -11,7 +11,6 @@ class JoinPage extends StatefulWidget {
 }
 
 class _JoinPageState extends State<JoinPage> {
-
   final gameIdController = TextEditingController();
 
   @override
@@ -101,9 +100,7 @@ class _JoinPageState extends State<JoinPage> {
             border: OutlineInputBorder(),
           ),
           keyboardType: TextInputType.number,
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly
-          ],
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
       ),
       SizedBox(height: 32.0),

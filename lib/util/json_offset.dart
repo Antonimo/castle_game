@@ -12,9 +12,9 @@ extension JsonOffset on Offset {
       );
 
   Offset flip(Size? size) => Offset(
-    size == null ? dx : size.width - dx,
-    size == null ? dy : size.height - dy,
-  );
+        size == null ? dx : size.width - dx,
+        size == null ? dy : size.height - dy,
+      );
 
   Offset adjust(Size? size) {
     if (size == null) return this;

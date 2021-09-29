@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:castle_game/app_router.dart';
 import 'package:castle_game/game/base.dart';
 import 'package:castle_game/game/drawn_line.dart';
+import 'package:castle_game/game/game_consts.dart';
 import 'package:castle_game/game/player.dart';
 import 'package:castle_game/game/unit.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class Game {
 
   bool canDrawPath = false;
 
-  double drawDistanceMax = 1300.0;
+  double drawDistanceMax = GameConsts.DRAW_DISTANCE_MAX;
   double drawDistance = 0.0;
 
   // TODO: move this to LocalMultiplayerClient
@@ -53,23 +54,31 @@ class Game {
   }
 
   void init(Size size) {
+    // TODO: use Log everywhere
     print('Game init: $size');
 
     this.size = size;
 
-    // players.clear();
-    // units.clear();
-    // bases.clear();
-
     canDrawPath = false;
 
+    toggleGame();
+  }
+
+  void initObjects() {
+    canDrawPath = false;
+
+    players.clear();
+    units.clear();
+    bases.clear();
+
     players.add(
+      // TODO: attach connected players ids?
       Player(
         'p1',
         'p1',
         Colors.orange,
         // TODO: use %, cast to Offset
-        Offset(size.width / 2, size.height - 10), // TODO: to consts
+        Offset(size!.width / 2, size!.height - 10),
       ),
     );
     players.add(
@@ -77,30 +86,28 @@ class Game {
         'p2',
         'p2',
         Colors.purple,
-        Offset(size.width / 2, 10), // TODO: to consts
+        Offset(size!.width / 2, 10),
       ),
     );
 
     players.forEach((player) {
-      player.nextUnitCooldown = 3.0;
+      player.nextUnitCooldown = GameConsts.INITIAL_NEXT_UNIT_COOLDOWN;
     });
 
     bases.add(
       Base(
         players[0].id,
-        Offset(size.width / 2, 85 * size.height / 100),
+        Offset(size!.width / 2, 85 * size!.height / 100),
         players[0].color,
       ),
     );
     bases.add(
       Base(
         players[1].id,
-        Offset(size.width / 2, 15 * size.height / 100),
+        Offset(size!.width / 2, 15 * size!.height / 100),
         players[1].color,
       ),
     );
-
-    toggleGame();
   }
 
   Future<void> _runTheGame() async {
@@ -108,13 +115,11 @@ class Game {
       lastTime = DateTime.now();
     }
     while (running) {
-      // TODO: optimize the delay time to "race" frames
-      await Future.delayed(Duration(milliseconds: 1000 ~/ 400));
+      // TODO: (nice to have) optimize the delay time to "race" frames
+      await Future.delayed(Duration(milliseconds: 1000 ~/ GameConsts.CALCULATIONS_PER_SECOND));
 
       final DateTime now = DateTime.now();
       double dt = now.difference(lastTime).inMilliseconds / 1000.0;
-
-      // print('game loop ${now} ? dt: $dt  [${1000 ~/ 40}]');
 
       checkForPendingUnits();
 
@@ -151,13 +156,15 @@ class Game {
     // }
 
     // fetch my player
-    final myPlayer = players.firstWhere((_player) => _player.id == player);
-    if (myPlayer.pendingUnit != null) {
-      canDrawPath = true;
-      drawPathForPlayer = myPlayer;
-    } else {
-      canDrawPath = false;
-      drawPathForPlayer = null;
+    if (players.isNotEmpty) {
+      final myPlayer = players.firstWhere((_player) => _player.id == player);
+      if (myPlayer.pendingUnit != null) {
+        canDrawPath = true;
+        drawPathForPlayer = myPlayer;
+      } else {
+        canDrawPath = false;
+        drawPathForPlayer = null;
+      }
     }
   }
 
@@ -181,7 +188,7 @@ class Game {
     player.pendingUnit!.path = line;
     units.add(player.pendingUnit!);
     player.pendingUnit = null;
-    player.nextUnitCooldown = 5.0;
+    player.nextUnitCooldown = GameConsts.NEXT_UNIT_COOLDOWN;
   }
 
   double getDrawRemainingDistance() {

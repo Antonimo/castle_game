@@ -10,7 +10,6 @@ class HostPage extends StatefulWidget {
 }
 
 class _HostPageState extends State<HostPage> {
-
   @override
   void initState() {
     super.initState();

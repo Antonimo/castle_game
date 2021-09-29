@@ -1,23 +1,24 @@
 import 'package:castle_game/game/base.dart';
 import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game.dart';
+import 'package:castle_game/game/game_consts.dart';
 import 'package:castle_game/util/json_offset.dart';
 import 'package:flutter/material.dart';
 
 class Unit {
   String player;
-  MaterialColor color;
+  Color color;
   Offset pos;
   DrawnLine? path;
 
-  double maxHp = 60;
-  double hp = 60;
+  double maxHp = GameConsts.UNIT_MAX_HP;
+  double hp = GameConsts.UNIT_MAX_HP;
 
   bool alive = true;
 
   // TODO: relation to player
 
-  double speed = 40; // pixels per second // TODO: use %
+  double speed = GameConsts.UNIT_SPEED; // pixels per second // TODO: use %
 
   bool moving = false;
   double? cooldown;
@@ -27,7 +28,7 @@ class Unit {
   Map toPlayState() {
     return {
       'player': player,
-      // 'color': ,
+      'color': color.value,
       'pos': pos.toJson(),
       'path': path?.toPlayState(),
       'maxHp': maxHp,
@@ -44,8 +45,7 @@ class Unit {
 
     final unit = Unit(
       playState['player'],
-      // TODO: colors
-      Colors.orange,
+      Color(playState['color']),
       Offset.zero.fromJson(playState['pos']).flip(flipCoords),
     );
     unit.path = DrawnLine.fromPlayState(playState['path'], flipCoords: flipCoords);
@@ -75,11 +75,11 @@ class Unit {
     final engaged = engage(game);
 
     if (engaged) {
-      cooldown = 3.0;
+      cooldown = GameConsts.UNIT_ENGAGED_COOLDOWN;
       moving = false;
     }
 
-    if (moving && path != null && !path!.path.isEmpty) {
+    if (moving && path != null && path!.path.isNotEmpty) {
       move(dt);
     }
   }
@@ -88,11 +88,10 @@ class Unit {
   /// Attack the closest enemy.
   /// If no nearby enemies, check if can engage base
   bool engage(Game game) {
-    // Oppinent Units nearby?
+    // Opponent Units nearby?
     for (var unit in game.units) {
       if (unit.player == player) continue;
-      if ((pos - unit.pos).distance < 17) {
-        // TODO: move to consts
+      if ((pos - unit.pos).distance < GameConsts.UNIT_ENGAGE_DISTANCE) {
         attackUnit(unit);
         return true;
       }
@@ -101,8 +100,7 @@ class Unit {
     // Opponent Base nearby?
     for (var base in game.bases) {
       if (base.player == player) continue;
-      if ((pos - base.pos).distance < 32) {
-        // TODO: move to consts
+      if ((pos - base.pos).distance < GameConsts.UNIT_ENGAGE_BASE_DISTANCE) {
         attackBase(base);
         return true;
       }
