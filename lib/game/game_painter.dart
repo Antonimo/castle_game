@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:castle_game/game/base.dart';
 import 'package:castle_game/game/drawn_line.dart';
@@ -36,32 +37,27 @@ class GamePainter extends CustomPainter {
       drawBase(canvas, base, game.adjust);
     });
 
+    game.units.forEach((unit) {
+      if (unit.player == game.player && unit.path != null) {
+        drawUnitPath(canvas, unit.path!, game.adjust);
+      }
+      drawUnit(canvas, unit, game.adjust);
+    });
+
     if (game.canDrawPath) {
       drawLine(canvas);
       drawRemainingDistanceIndicator(canvas, size, game.getDrawRemainingDistance());
     }
-
-    game.units.forEach((unit) {
-      drawUnit(canvas, unit, game.adjust);
-    });
   }
 
   void drawLine(Canvas canvas) {
     Paint paint = Paint()
-      ..color = Colors.redAccent
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 5.0; // TODO: adjusted?
+      ..color = lines[0].color
+      ..isAntiAlias = true
+      // ..strokeCap = StrokeCap.round
+      ..strokeWidth = lines[0].width; // TODO: adjusted?
 
-    for (int i = 0; i < lines.length; ++i) {
-      if (lines[i] == null) continue;
-      for (int j = 0; j < lines[i].path.length - 1; ++j) {
-        if (lines[i].path[j] != null && lines[i].path[j + 1] != null) {
-          paint.color = lines[i].color;
-          paint.strokeWidth = lines[i].width;
-          canvas.drawLine(lines[i].path[j], lines[i].path[j + 1], paint);
-        }
-      }
-    }
+    canvas.drawPoints(PointMode.polygon, lines[0].path, paint);
   }
 
   void drawRemainingDistanceIndicator(Canvas canvas, Size size, double remainingDistance) {
@@ -111,6 +107,19 @@ class GamePainter extends CustomPainter {
       GameConsts.BASE_SIZE * (adjust?.shortestSide ?? 1), // TODO: DRY
       basePaint,
     );
+  }
+
+  void drawUnitPath(Canvas canvas, DrawnLine line, Size? adjust) {
+    Paint paint = Paint()
+      ..color = Colors.teal.withOpacity(0.4)
+      // ..strokeCap = StrokeCap.round
+      ..isAntiAlias = true
+      ..strokeWidth = 1.0; // TODO: adjusted?
+
+    // for (int j = 0; j < line.path.length - 1; ++j) {
+    //   canvas.drawLine(line.path[j].adjust(adjust), line.path[j + 1].adjust(adjust), paint);
+    // }
+    canvas.drawPoints(PointMode.polygon, line.path.map((offset) => offset.adjust(adjust)).toList(), paint);
   }
 
   void drawUnit(Canvas canvas, Unit unit, Size? adjust) {

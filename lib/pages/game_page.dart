@@ -3,6 +3,7 @@ import 'package:castle_game/game/game_client.dart';
 import 'package:castle_game/game/game_consts.dart';
 import 'package:castle_game/game/game_painter.dart';
 import 'package:castle_game/util/json_offset.dart';
+import 'package:castle_game/util/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -110,11 +111,13 @@ class _GamePageState extends State<GamePage> {
     RenderBox? box = context.findRenderObject() as RenderBox;
     Offset point = box.globalToLocal(details.globalPosition);
 
-    List<Offset> path = [
-      // Offset(MediaQuery.of(context).size.width / 2, MediaQuery.of(context).size.height - 10),
+    List<Offset> path = _gameClient!.game!.fillPath(
       _gameClient!.game!.drawPathForPlayer!.startPos.adjust(_gameClient!.game?.adjust),
-      point
-    ];
+      point,
+      GameConsts.UNIT_SIZE,
+    );
+
+    Log.d(TAG, path);
 
     line = DrawnLine(
       path,
@@ -122,7 +125,7 @@ class _GamePageState extends State<GamePage> {
       drawingWidth,
     );
 
-    _gameClient!.game!.drawDistance = (path[path.length - 1] - path[path.length - 2]).distance;
+    _gameClient!.game!.drawDistance = (path[0] - path[path.length - 1]).distance;
   }
 
   void onPanUpdate(DragUpdateDetails details) {

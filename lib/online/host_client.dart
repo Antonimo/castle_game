@@ -8,7 +8,6 @@ import 'package:castle_game/game/game_consts.dart';
 import 'package:castle_game/game/player.dart';
 import 'package:castle_game/game/unit.dart';
 import 'package:castle_game/online/online_player.dart';
-import 'package:castle_game/util/json_size.dart';
 import 'package:castle_game/util/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
@@ -178,7 +177,7 @@ class HostClient extends GameClient {
     _game?.initObjects();
   }
 
-  void onGameChange(){
+  void onGameChange() {
     emitPlayingGameState();
   }
 

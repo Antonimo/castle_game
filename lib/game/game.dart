@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
 
 class Game {
+  static const String TAG = '[Game] ';
+
   Subject<double> stateSubject = BehaviorSubject<double>();
 
   String? id;
@@ -230,6 +232,33 @@ class Game {
   }
 
   // TODO: pending unit should not be with all units, opponent could've added units also.
+
+  List<Offset> fillPath(Offset start, Offset end, double step) {
+    Offset current = start;
+
+    List<Offset> path = [
+      current,
+    ];
+
+    int steps = 100;
+
+    double direction = (end - start).direction;
+    final stepOffset = Offset.fromDirection(direction, step);
+
+    while (current != end && steps > 0) {
+      steps--;
+
+      if ((current - end).distance < step) {
+        current = end;
+      } else {
+        current += stepOffset;
+      }
+
+      path.add(current);
+    }
+
+    return path;
+  }
 
   void givePathToUnit(DrawnLine line, Player player) {
     // if (drawPathForPlayer == null || canDrawPath == null) return;
