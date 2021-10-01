@@ -13,21 +13,28 @@ class MenuPage extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            SizedBox(height: 32),
+            SizedBox(height: 32.0),
             ElevatedButton(
               onPressed: () {
                 AppRouter.instance.navTo(AppRouter.routeHost);
               },
               child: const Text('Host Online Game'),
             ),
-            SizedBox(height: 32),
+            SizedBox(height: 32.0),
             ElevatedButton(
               onPressed: () {
                 AppRouter.instance.navTo(AppRouter.routeJoin);
               },
               child: const Text('Join Online Game'),
             ),
-            SizedBox(height: 32),
+            SizedBox(height: 32.0),
+            SizedBox(height: 8.0),
+            ElevatedButton(
+              onPressed: () {
+                AppRouter.instance.navTo(AppRouter.routeMultiplayer);
+              },
+              child: const Text('Multiplayer'),
+            ),
           ],
         ),
       ),

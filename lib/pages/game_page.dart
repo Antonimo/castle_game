@@ -3,12 +3,11 @@ import 'package:castle_game/game/game_client.dart';
 import 'package:castle_game/game/game_consts.dart';
 import 'package:castle_game/game/game_painter.dart';
 import 'package:castle_game/util/json_offset.dart';
-import 'package:castle_game/util/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class GamePage extends StatefulWidget {
-  Object? arguments;
+  final Object? arguments;
 
   GamePage({Key? key, this.arguments}) : super(key: key);
 
@@ -41,7 +40,7 @@ class _GamePageState extends State<GamePage> {
   void initState() {
     super.initState();
     //Fullscreen display (still including appbar)
-    SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
     final arguments = widget.arguments as Map?;
 
@@ -116,8 +115,6 @@ class _GamePageState extends State<GamePage> {
       point,
       GameConsts.UNIT_SIZE,
     );
-
-    Log.d(TAG, path);
 
     line = DrawnLine(
       path,

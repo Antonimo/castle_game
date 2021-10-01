@@ -9,6 +9,7 @@ import 'package:castle_game/game/player.dart';
 import 'package:castle_game/game/unit.dart';
 import 'package:castle_game/online/online_player.dart';
 import 'package:castle_game/util/logger.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -172,9 +173,14 @@ class HostClient extends GameClient {
     _game?.init(
       size,
       onChange: onGameChange,
+      getNextPlayerWithPendingUnit: getNextPlayerWithPendingUnit,
       onGameOver: onGameOver,
     );
     _game?.initObjects();
+  }
+
+  Player? getNextPlayerWithPendingUnit(List<Player> players) {
+    return players.firstWhereOrNull((_player) => (_player.id == _game!.player && _player.pendingUnit != null));
   }
 
   void onGameChange() {

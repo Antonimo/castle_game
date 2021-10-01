@@ -3,6 +3,7 @@ import 'package:castle_game/pages/game_page.dart';
 import 'package:castle_game/pages/host_page.dart';
 import 'package:castle_game/pages/join_page.dart';
 import 'package:castle_game/pages/menu_page.dart';
+import 'package:castle_game/pages/multiplayer_page.dart';
 import 'package:castle_game/pages/unknown_page.dart';
 import 'package:castle_game/util/app_navigator_observer.dart';
 import 'package:castle_game/util/logger.dart';
@@ -27,6 +28,7 @@ class AppRouter {
   static const String routeMenu = '/';
   static const String routeHost = 'host';
   static const String routeJoin = 'join';
+  static const String routeMultiplayer = 'multiplayer';
   static const String routeGame = 'game';
 
   //default route
@@ -56,6 +58,9 @@ class AppRouter {
         break;
       case routeJoin:
         _push(routeJoin);
+        break;
+      case routeMultiplayer:
+        _push(routeMultiplayer);
         break;
       case routeGame:
         _push(routeGame, arguments: arguments);
@@ -96,6 +101,9 @@ class AppRouter {
 
       case routeJoin:
         return MaterialPageRoute(builder: (_) => JoinPage());
+
+      case routeMultiplayer:
+        return MaterialPageRoute(builder: (_) => MultiplayerPage());
 
       case routeGame:
         return MaterialPageRoute(builder: (_) => GamePage(arguments: settings.arguments));

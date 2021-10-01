@@ -22,7 +22,7 @@ class GamePainter extends CustomPainter {
 
     // if (!game.running) return;
 
-    if (game.canDrawPath) {
+    if (game.canDrawPath && game.drawPathForPlayer?.pendingUnit != null) {
       // Highlight the pending unit
       drawPendingUnit(canvas, game.drawPathForPlayer!.pendingUnit!, game.adjust);
     }

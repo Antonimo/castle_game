@@ -28,6 +28,8 @@ class Game {
 
   Function? onChange;
 
+  Function? getNextPlayerWithPendingUnit;
+
   Function? onGameOver;
 
   bool canDrawPath = false;
@@ -68,10 +70,17 @@ class Game {
   void init(
     Size size, {
     required Function onChange,
+    required Function getNextPlayerWithPendingUnit,
     required Function onGameOver,
   }) {
     // TODO: use Log everywhere
     print('Game init: $size');
+
+    this.onChange = onChange;
+
+    this.getNextPlayerWithPendingUnit = getNextPlayerWithPendingUnit;
+
+    this.onGameOver = onGameOver;
 
     this.size = size;
 
@@ -85,10 +94,6 @@ class Game {
     );
 
     // TODO: make game map fit while maintaining aspect ratio
-
-    this.onChange = onChange;
-
-    this.onGameOver = onGameOver;
 
     canDrawPath = false;
 
@@ -195,23 +200,14 @@ class Game {
   }
 
   void checkForPendingUnits() {
-    // final Player? player = players.firstWhereOrNull((player) => player.pendingUnit != null);
-    //
-    // if (player != null) {
-    //   canDrawPath = true;
-    //   drawPathForPlayer = player;
-    // }
+    final Player? _player = getNextPlayerWithPendingUnit!(players);
 
-    // fetch my player
-    if (players.isNotEmpty) {
-      final myPlayer = players.firstWhere((_player) => _player.id == player);
-      if (myPlayer.pendingUnit != null) {
-        canDrawPath = true;
-        drawPathForPlayer = myPlayer;
-      } else {
-        canDrawPath = false;
-        drawPathForPlayer = null;
-      }
+    if (_player != null) {
+      canDrawPath = true;
+      drawPathForPlayer = _player;
+    } else {
+      canDrawPath = false;
+      drawPathForPlayer = null;
     }
   }
 

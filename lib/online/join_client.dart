@@ -7,6 +7,7 @@ import 'package:castle_game/game/game_client.dart';
 import 'package:castle_game/game/player.dart';
 import 'package:castle_game/game/unit.dart';
 import 'package:castle_game/util/logger.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -192,8 +193,13 @@ class JoinClient extends GameClient {
     _game?.init(
       size,
       onChange: () {}, // joined client does not send game state
+      getNextPlayerWithPendingUnit: getNextPlayerWithPendingUnit, // joined client does not send game state
       onGameOver: onGameOver,
     );
+  }
+
+  Player? getNextPlayerWithPendingUnit(List<Player> players) {
+    return players.firstWhereOrNull((_player) => (_player.id == _game!.player && _player.pendingUnit != null));
   }
 
   void applyPlayingGameState(dynamic gameState) {
