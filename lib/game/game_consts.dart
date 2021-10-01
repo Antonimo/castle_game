@@ -1,7 +1,6 @@
 class GameConsts {
   static const CALCULATIONS_PER_SECOND = 40;
-  static const PLAYING_GAME_STATE_EMITS_PER_SECOND = 40;
-  // static const PLAYING_GAME_STATE_EMITS_PER_SECOND = 1;
+  static const PLAYING_GAME_STATE_EMITS_DELAY = 5000;
 
   // Sizes
   static const BASE_SIZE = 30.0;

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:castle_game/app_router.dart';
 import 'package:castle_game/game/base.dart';
 import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game_consts.dart';
@@ -23,6 +22,12 @@ class Game {
   // We are in the game screen and the game is running
   bool running = false;
 
+  bool gameOver = false;
+
+  Function? onChange;
+
+  Function? onGameOver;
+
   bool canDrawPath = false;
 
   double drawDistanceMax = GameConsts.DRAW_DISTANCE_MAX;
@@ -32,6 +37,8 @@ class Game {
   Player? drawPathForPlayer;
 
   DateTime lastTime = DateTime.now();
+
+  bool queuedOnChange = false;
 
   Size? size;
   Size? hostSize;
@@ -53,23 +60,35 @@ class Game {
     _runTheGame();
   }
 
-  void init(Size size) {
+  void init(
+    Size size, {
+    required Function onChange,
+    required Function onGameOver,
+  }) {
     // TODO: use Log everywhere
     print('Game init: $size');
 
     this.size = size;
+
+    this.onChange = onChange;
+
+    this.onGameOver = onGameOver;
 
     canDrawPath = false;
 
     toggleGame();
   }
 
-  void initObjects() {
+  void resetGame() {
     canDrawPath = false;
 
     players.clear();
     units.clear();
     bases.clear();
+  }
+
+  void initObjects() {
+    resetGame();
 
     players.add(
       // TODO: attach connected players ids?
@@ -108,6 +127,8 @@ class Game {
         players[1].color,
       ),
     );
+
+    onChange!();
   }
 
   Future<void> _runTheGame() async {
@@ -138,13 +159,23 @@ class Game {
         if (base.hp <= 0) {
           // TODO: game over
           running = false;
+          gameOver = true;
+          onGameOver!();
         }
+      }
+
+      if (queuedOnChange) {
+        onChange!();
+        queuedOnChange = false;
       }
 
       lastTime = now;
       stateSubject.add(0);
     }
-    showGameOver();
+  }
+
+  void queueOnChange() {
+    queuedOnChange = true;
   }
 
   void checkForPendingUnits() {
@@ -169,6 +200,9 @@ class Game {
   }
 
   Unit createPendingUnit(Player player) {
+    // TODO: setState system?
+    queueOnChange();
+
     return Unit(
       player.id,
       player.color,
@@ -178,6 +212,7 @@ class Game {
 
   void removeUnit(Unit unit) {
     units.remove(unit);
+    queueOnChange();
   }
 
   // TODO: pending unit should not be with all units, opponent could've added units also.
@@ -189,37 +224,12 @@ class Game {
     units.add(player.pendingUnit!);
     player.pendingUnit = null;
     player.nextUnitCooldown = GameConsts.NEXT_UNIT_COOLDOWN;
+
+    queueOnChange();
   }
 
   double getDrawRemainingDistance() {
     return (drawDistanceMax - drawDistance) * 100 / drawDistanceMax;
-  }
-
-  Future<void> showGameOver() async {
-    return showDialog<void>(
-      context: AppRouter.appNavigatorKey.currentContext!,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Game Over!'),
-          // content: SingleChildScrollView(
-          //   child: ListBody(
-          //     children: const <Widget>[
-          //       Text('Would you like to approve of this message?'),
-          //     ],
-          //   ),
-          // ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Close'),
-              onPressed: () {
-                AppRouter.instance.navTo(AppRouter.routeMenu);
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void dispose() {

@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-class HostClient implements GameClient {
+class HostClient extends GameClient {
   static const String TAG = '[HostClient] ';
 
   HostClient._privateConstructor();
@@ -153,6 +153,7 @@ class HostClient implements GameClient {
     if (gameState['playing'] != _game!.playing) {
       _game!.playing = gameState['playing'];
       if (_game!.playing) {
+        _game!.resetGame();
         AppRouter.instance.navTo(AppRouter.routeGame, arguments: {'gameClient': this});
         initPlayingGameStateBroadcastLoop();
       }
@@ -163,22 +164,37 @@ class HostClient implements GameClient {
   }
 
   void ready() {
+    _game!.resetGame();
+    emitPlayingGameState();
     socket?.emit('ready');
   }
 
   void initGame(Size size) {
-    _game?.init(size);
+    _game?.init(
+      size,
+      onChange: onGameChange,
+      onGameOver: onGameOver,
+    );
     _game?.initObjects();
+  }
+
+  void onGameChange(){
+    emitPlayingGameState();
   }
 
   Future<void> initPlayingGameStateBroadcastLoop() async {
     while (_game != null && _game!.playing) {
-      await Future.delayed(Duration(milliseconds: 1000 ~/ GameConsts.PLAYING_GAME_STATE_EMITS_PER_SECOND));
+      await Future.delayed(Duration(milliseconds: GameConsts.PLAYING_GAME_STATE_EMITS_DELAY));
 
       Log.i(TAG, 'initPlayingGameStateBroadcastLoop() current game id: ${_game!.id} ');
 
-      socket?.emit('playingGameState', buildPlayingGameState());
+      emitPlayingGameState();
     }
+    Log.i(TAG, 'initPlayingGameStateBroadcastLoop() game id: ${_game!.id} EXITING!!!');
+  }
+
+  void emitPlayingGameState() {
+    socket?.emit('playingGameState', buildPlayingGameState());
   }
 
   Map buildPlayingGameState() {
@@ -221,6 +237,12 @@ class HostClient implements GameClient {
 
     _game!.drawPathForPlayer = null;
     _game!.canDrawPath = false;
+  }
+
+  void onGameOver() {
+    socket?.emit('gameOver');
+
+    showGameOver();
   }
 
   void _dispose() {

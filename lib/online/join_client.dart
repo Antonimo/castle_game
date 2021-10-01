@@ -14,9 +14,8 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import 'online_player.dart';
 
-
 // TODO: another game - bug?
-class JoinClient implements GameClient {
+class JoinClient extends GameClient {
   static const String TAG = '[JoinClient] ';
 
   JoinClient._privateConstructor();
@@ -168,8 +167,11 @@ class JoinClient implements GameClient {
     if (gameState['playing'] != _game!.playing) {
       _game!.playing = gameState['playing'];
       if (_game!.playing) {
+        _game!.resetGame();
         AppRouter.instance.navTo(AppRouter.routeGame, arguments: {'gameClient': this});
       }
+
+      // TODO: show game over here?
     }
 
     if (!_game!.playing) {
@@ -186,7 +188,11 @@ class JoinClient implements GameClient {
   }
 
   void initGame(Size size) {
-    _game?.init(size);
+    _game?.init(
+      size,
+      onChange: (){}, // joined client does not send game state
+      onGameOver: onGameOver,
+    );
   }
 
   void applyPlayingGameState(dynamic gameState) {
@@ -198,7 +204,9 @@ class JoinClient implements GameClient {
 
     // Log.i(TAG, 'applyPlayingGameState() socket.id: ');
 
-    _game?.hostSize = Size.zero.fromJson(gameState['playingState']['size']);
+    if (gameState['playingState']['size'] != null){
+      _game?.hostSize = Size.zero.fromJson(gameState['playingState']['size']);
+    }
 
     if (game?.hostSize != null && game?.size != null) {
       _game?.adjust = Size(
@@ -236,6 +244,16 @@ class JoinClient implements GameClient {
       'path': line.toPlayState(flip: game?.hostSize, adjust: _game?.adjustBack),
       'player': player.id,
     });
+  }
+
+  void onGameOver() {
+    // TODO: only when host sends game over
+    showGameOver();
+    // _game!.playing = false;
+    _game!.running = false;
+    _game!.gameOver = false;
+
+    _game!.setState();
   }
 
   void _dispose() {
