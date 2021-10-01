@@ -199,8 +199,9 @@ class HostClient extends GameClient {
 
   Map buildPlayingGameState() {
     Map playingGameState = {
-      'size': _game!.size?.toJson(),
+      // 'size': _game!.size?.toJson(),
       'id': _game!.id,
+      'time': DateTime.now().millisecondsSinceEpoch,
       'players': [],
       'bases': [],
       'units': [],

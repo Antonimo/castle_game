@@ -40,8 +40,11 @@ class Game {
 
   bool queuedOnChange = false;
 
+  static const gameSize = Size(360.0, 800.0);
+
   Size? size;
-  Size? hostSize;
+
+  // Size? hostSize;
   Size? adjust;
   Size? adjustBack;
 
@@ -70,6 +73,17 @@ class Game {
 
     this.size = size;
 
+    adjust = Size(
+      size.width / gameSize.width,
+      size.height / gameSize.height,
+    );
+    adjustBack = Size(
+      gameSize.width / size.width,
+      gameSize.height / size.height,
+    );
+
+    // TODO: make game map fit while maintaining aspect ratio
+
     this.onChange = onChange;
 
     this.onGameOver = onGameOver;
@@ -97,7 +111,7 @@ class Game {
         'p1',
         Colors.orange,
         // TODO: use %, cast to Offset
-        Offset(size!.width / 2, size!.height - 10),
+        Offset(gameSize.width / 2, gameSize.height - 10),
       ),
     );
     players.add(
@@ -105,7 +119,7 @@ class Game {
         'p2',
         'p2',
         Colors.purple,
-        Offset(size!.width / 2, 10),
+        Offset(gameSize.width / 2, 10),
       ),
     );
 
@@ -116,14 +130,14 @@ class Game {
     bases.add(
       Base(
         players[0].id,
-        Offset(size!.width / 2, 85 * size!.height / 100),
+        Offset(gameSize.width / 2, 85 * gameSize.height / 100),
         players[0].color,
       ),
     );
     bases.add(
       Base(
         players[1].id,
-        Offset(size!.width / 2, 15 * size!.height / 100),
+        Offset(gameSize.width / 2, 15 * gameSize.height / 100),
         players[1].color,
       ),
     );

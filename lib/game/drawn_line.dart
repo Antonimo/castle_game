@@ -22,4 +22,12 @@ class DrawnLine {
 
     return DrawnLine(path, Colors.black, 5.0);
   }
+
+  DrawnLine adjust(Size? size) {
+    if (size == null) return this;
+
+    final List<Offset> _path = path.map((offset) => offset.adjust(size)).toList();
+
+    return DrawnLine(_path, color, width);
+  }
 }

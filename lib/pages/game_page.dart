@@ -151,13 +151,16 @@ class _GamePageState extends State<GamePage> {
 
       // Log.i(TAG, 'onPanUpdate distance: ${(point - base.pos.adjust(_gameClient!.game!.adjust!)).distance} adjust: ${_gameClient!.game!.adjust!.shortestSide} adjusted: ${(30 * (_gameClient!.game!.adjust == null ? 1 : _gameClient!.game!.adjust!.shortestSide))}');
 
-      if ((point - base.pos.adjust(_gameClient?.game?.adjust)).distance <
-          ((GameConsts.BASE_SIZE + 1) * (_gameClient!.game?.adjust == null ? 1 : _gameClient!.game!.adjust!.shortestSide))) {
-        // Log.i(TAG, 'onPanUpdate distance: ${(point - base.pos.adjust(_gameClient!.game!.adjust!)).distance} adjust: ${_gameClient!.game!.adjust!.shortestSide} adjusted: ${(30 * (_gameClient!.game!.adjust == null ? 1 : _gameClient!.game!.adjust!.shortestSide))}');
+      if ((point.adjust(_gameClient?.game?.adjustBack) - base.pos).distance < GameConsts.BASE_SIZE) {
+        // Log.i(TAG, 'onPanUpdate distance: ${(point.adjust(_gameClient?.game?.adjustBack) - base.pos).distance}');
 
         // TODO: move to consts
         drawing = false;
-        _gameClient!.givePathToUnit(line, _gameClient!.game!.drawPathForPlayer!);
+
+        _gameClient!.givePathToUnit(
+          line.adjust(_gameClient?.game?.adjustBack),
+          _gameClient!.game!.drawPathForPlayer!,
+        );
         _gameClient!.game!.drawPathForPlayer = null;
         _gameClient!.game!.canDrawPath = false; // TODO: DRY
         clearLine();

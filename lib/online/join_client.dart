@@ -6,7 +6,6 @@ import 'package:castle_game/game/game.dart';
 import 'package:castle_game/game/game_client.dart';
 import 'package:castle_game/game/player.dart';
 import 'package:castle_game/game/unit.dart';
-import 'package:castle_game/util/json_size.dart';
 import 'package:castle_game/util/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
@@ -46,6 +45,8 @@ class JoinClient extends GameClient {
   List<OnlinePlayer> players = [];
 
   Game? get game => _game;
+
+  int lastPlayingGameStateTime = 0;
 
   void joinGame(String gameId) {
     _game = Game();
@@ -190,7 +191,7 @@ class JoinClient extends GameClient {
   void initGame(Size size) {
     _game?.init(
       size,
-      onChange: (){}, // joined client does not send game state
+      onChange: () {}, // joined client does not send game state
       onGameOver: onGameOver,
     );
   }
@@ -204,34 +205,49 @@ class JoinClient extends GameClient {
 
     // Log.i(TAG, 'applyPlayingGameState() socket.id: ');
 
-    if (gameState['playingState']['size'] != null){
-      _game?.hostSize = Size.zero.fromJson(gameState['playingState']['size']);
-    }
+    if (gameState['playingState']['time'] == null) return;
 
-    if (game?.hostSize != null && game?.size != null) {
-      _game?.adjust = Size(
-        game!.size!.width / game!.hostSize!.width,
-        game!.size!.height / game!.hostSize!.height,
-      );
-      _game?.adjustBack = Size(
-        game!.hostSize!.width / game!.size!.width,
-        game!.hostSize!.height / game!.size!.height,
-      );
-      // print('adjust hostSize: ${game.hostSize} size: ${game.size} adjust: ${adjust}');
-    }
+    if (gameState['playingState']['time'] == lastPlayingGameStateTime) return;
+
+    lastPlayingGameStateTime = gameState['playingState']['time'];
+
+    // if (gameState['playingState']['size'] != null){
+    //   _game?.hostSize = Size.zero.fromJson(gameState['playingState']['size']);
+    // }
+
+    // if (game?.hostSize != null && game?.size != null) {
+    //   _game?.adjust = Size(
+    //     game!.size!.width / game!.hostSize!.width,
+    //     game!.size!.height / game!.hostSize!.height,
+    //   );
+    //   _game?.adjustBack = Size(
+    //     game!.hostSize!.width / game!.size!.width,
+    //     game!.hostSize!.height / game!.size!.height,
+    //   );
+    //   // print('adjust hostSize: ${game.hostSize} size: ${game.size} adjust: ${adjust}');
+    // }
 
     List<Player> players = [];
     List<Base> bases = [];
     List<Unit> units = [];
 
     (gameState['playingState']['players'] as List).forEach((player) {
-      players.add(Player.fromPlayState(player, flipCoords: _game!.hostSize));
+      players.add(Player.fromPlayState(
+        player,
+        flipCoords: Game.gameSize,
+      ));
     });
     (gameState['playingState']['bases'] as List).forEach((base) {
-      bases.add(Base.fromPlayState(base, flipCoords: _game!.hostSize));
+      bases.add(Base.fromPlayState(
+        base,
+        flipCoords: Game.gameSize,
+      ));
     });
     (gameState['playingState']['units'] as List).forEach((unit) {
-      units.add(Unit.fromPlayState(unit, flipCoords: _game!.hostSize)!);
+      units.add(Unit.fromPlayState(
+        unit,
+        flipCoords: Game.gameSize,
+      )!);
     });
 
     _game?.players = players;
@@ -241,7 +257,10 @@ class JoinClient extends GameClient {
 
   void givePathToUnit(DrawnLine line, Player player) {
     socket?.emit('attachPathToPendingUnit', {
-      'path': line.toPlayState(flip: game?.hostSize, adjust: _game?.adjustBack),
+      'path': line.toPlayState(
+        flip: Game.gameSize,
+        // adjust: _game?.adjustBack,
+      ),
       'player': player.id,
     });
   }
