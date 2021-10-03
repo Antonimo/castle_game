@@ -10,6 +10,8 @@ import 'package:castle_game/util/json_offset.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import 'item.dart';
+
 class GamePainter extends CustomPainter {
   final Game game;
   final List<DrawnLine> lines;
@@ -44,6 +46,10 @@ class GamePainter extends CustomPainter {
       drawUnit(canvas, unit, game.adjust);
     });
 
+    game.items.forEach((item) {
+      drawItem(canvas, item, game.adjust);
+    });
+
     if (game.canDrawPath) {
       drawLine(canvas);
       drawRemainingDistanceIndicator(canvas, size, game.getDrawRemainingDistance());
@@ -76,7 +82,7 @@ class GamePainter extends CustomPainter {
   void drawBase(Canvas canvas, Base base, Size? adjust) {
     // HP
     Paint hpPaint = Paint()
-      ..color = Colors.redAccent
+      ..color = Colors.redAccent.withOpacity(0.8)
       ..style = PaintingStyle.stroke
       ..style = PaintingStyle.fill
       ..strokeWidth = GameConsts.BASE_SIZE // TODO: adjusted
@@ -125,7 +131,7 @@ class GamePainter extends CustomPainter {
   void drawUnit(Canvas canvas, Unit unit, Size? adjust) {
     // HP
     Paint hpPaint = Paint()
-      ..color = Colors.redAccent
+      ..color = Colors.redAccent.withOpacity(0.8)
       ..style = PaintingStyle.stroke
       ..style = PaintingStyle.fill
       ..strokeWidth = GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1)
@@ -168,6 +174,44 @@ class GamePainter extends CustomPainter {
       GameConsts.PENDING_UNIT_MARKER_SIZE * (adjust?.shortestSide ?? 1),
       unitPaint,
     );
+  }
+
+  void drawItem(Canvas canvas, Item item, Size? adjust) {
+    final pos = item.pos.adjust(adjust);
+
+    Paint itemPaint = Paint()
+      ..color = Colors.black38
+      ..style = PaintingStyle.stroke
+      ..isAntiAlias = true
+      ..strokeWidth = 1.5; // TODO: adjusted
+
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: pos,
+          height: GameConsts.POWERUP_SIZE * 2,
+          width: GameConsts.POWERUP_SIZE * 2,
+        ),
+        Radius.circular(3.0),
+      ),
+      itemPaint,
+    );
+
+    final icon = Icons.add;
+    TextPainter textPainter = TextPainter(
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.center,
+    );
+    textPainter.text = TextSpan(
+      text: String.fromCharCode(icon.codePoint),
+      style: TextStyle(
+        fontSize: GameConsts.POWERUP_SIZE * 2,
+        fontFamily: icon.fontFamily,
+        color: Colors.redAccent,
+      ),
+    );
+    textPainter.layout();
+    textPainter.paint(canvas, pos.translate(-GameConsts.POWERUP_SIZE, -GameConsts.POWERUP_SIZE));
   }
 
   @override

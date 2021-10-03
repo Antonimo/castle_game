@@ -5,6 +5,7 @@ import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game.dart';
 import 'package:castle_game/game/game_client.dart';
 import 'package:castle_game/game/game_consts.dart';
+import 'package:castle_game/game/item.dart';
 import 'package:castle_game/game/player.dart';
 import 'package:castle_game/game/unit.dart';
 import 'package:castle_game/online/online_player.dart';
@@ -172,11 +173,16 @@ class HostClient extends GameClient {
   void initGame(Size size) {
     _game?.init(
       size,
+      onPlay: onPlay,
       onChange: onGameChange,
       getNextPlayerWithPendingUnit: getNextPlayerWithPendingUnit,
       onGameOver: onGameOver,
     );
     _game?.initObjects();
+  }
+
+  void onPlay(double dt) {
+    _game?.playPowerUps(dt);
   }
 
   Player? getNextPlayerWithPendingUnit(List<Player> players) {
@@ -210,6 +216,7 @@ class HostClient extends GameClient {
       'players': [],
       'bases': [],
       'units': [],
+      'items': [],
     };
 
     _game!.players.forEach((Player player) {
@@ -220,6 +227,9 @@ class HostClient extends GameClient {
     });
     _game!.units.forEach((Unit unit) {
       playingGameState['units'].add(unit.toPlayState());
+    });
+    _game!.items.forEach((Item item) {
+      playingGameState['items'].add(item.toPlayState());
     });
 
     return playingGameState;

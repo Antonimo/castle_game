@@ -53,11 +53,16 @@ class MultiplayerClient extends GameClient {
     _game?.resetGame();
     _game?.init(
       size,
+      onPlay: onPlay,
       onChange: () {}, // joined client does not send game state
       getNextPlayerWithPendingUnit: getNextPlayerWithPendingUnit,
       onGameOver: onGameOver,
     );
     _game?.initObjects();
+  }
+
+  void onPlay(double dt) {
+    _game?.playPowerUps(dt);
   }
 
   Player? getNextPlayerWithPendingUnit(List<Player> players) {

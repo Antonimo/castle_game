@@ -1,16 +1,21 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:castle_game/game/base.dart';
 import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game_consts.dart';
+import 'package:castle_game/game/item.dart';
 import 'package:castle_game/game/player.dart';
 import 'package:castle_game/game/unit.dart';
+import 'package:castle_game/util/typedef.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
 
 class Game {
   static const String TAG = '[Game] ';
+
+  Random random = new Random();
 
   Subject<double> stateSubject = BehaviorSubject<double>();
 
@@ -26,11 +31,13 @@ class Game {
 
   bool gameOver = false;
 
-  Function? onChange;
+  Function onPlay = (double dt) {};
 
-  Function? getNextPlayerWithPendingUnit;
+  Function onChange = noop;
 
-  Function? onGameOver;
+  Function getNextPlayerWithPendingUnit = noop;
+
+  Function onGameOver = noop;
 
   bool canDrawPath = false;
 
@@ -52,11 +59,17 @@ class Game {
   Size? adjust;
   Size? adjustBack;
 
+  // Game play mechanics
+  double nextPowerUpCooldown = GameConsts.NEXT_POWERUP_COOLDOWN;
+
+  // Game play content
   List<Player> players = [];
 
   List<Base> bases = [];
 
   List<Unit> units = [];
+
+  List<Item> items = [];
 
   void setState() {
     stateSubject.add(0.0);
@@ -69,12 +82,15 @@ class Game {
 
   void init(
     Size size, {
+    required Function onPlay,
     required Function onChange,
     required Function getNextPlayerWithPendingUnit,
     required Function onGameOver,
   }) {
     // TODO: use Log everywhere
     print('Game init: $size');
+
+    this.onPlay = onPlay;
 
     this.onChange = onChange;
 
@@ -106,6 +122,7 @@ class Game {
     players.clear();
     units.clear();
     bases.clear();
+    items.clear();
   }
 
   void initObjects() {
@@ -149,7 +166,7 @@ class Game {
       ),
     );
 
-    onChange!();
+    onChange();
   }
 
   Future<void> _runTheGame() async {
@@ -162,6 +179,8 @@ class Game {
 
       final DateTime now = DateTime.now();
       double dt = now.difference(lastTime).inMilliseconds / 1000.0;
+
+      onPlay(dt);
 
       checkForPendingUnits();
 
@@ -176,17 +195,20 @@ class Game {
       // Clear dead units
       units = units.where((unit) => unit.alive).toList();
 
+      // Clear used items
+      items = items.where((item) => item.active).toList();
+
       for (var base in bases) {
         if (base.hp <= 0) {
           // TODO: game over
           running = false;
           gameOver = true;
-          onGameOver!();
+          onGameOver();
         }
       }
 
       if (queuedOnChange) {
-        onChange!();
+        onChange();
         queuedOnChange = false;
       }
 
@@ -200,7 +222,7 @@ class Game {
   }
 
   void checkForPendingUnits() {
-    final Player? _player = getNextPlayerWithPendingUnit!(players);
+    final Player? _player = getNextPlayerWithPendingUnit(players);
 
     if (_player != null) {
       canDrawPath = true;
@@ -222,6 +244,7 @@ class Game {
     );
   }
 
+  // TODO: emit on change on remove units and items
   void removeUnit(Unit unit) {
     units.remove(unit);
     queueOnChange();
@@ -267,8 +290,46 @@ class Game {
     queueOnChange();
   }
 
+  void playPowerUps(double dt) {
+    nextPowerUpCooldown = nextPowerUpCooldown - dt;
+
+    if (nextPowerUpCooldown <= 0.0) {
+      nextPowerUpCooldown = GameConsts.NEXT_POWERUP_COOLDOWN;
+      addPowerUp();
+    }
+  }
+
+  void addPowerUp() {
+    // TODO: randomize powerups?
+    final nextPowerUpType = ItemType.healBase;
+
+    // TODO: find free spot
+    Offset pos = getRandomPos(
+      0,
+      gameSize.width,
+      30 * gameSize.height / 100,
+      70 * gameSize.height / 100,
+    );
+
+    items.add(
+      Item(
+        pos,
+        nextPowerUpType,
+      ),
+    );
+
+    queueOnChange();
+  }
+
   double getDrawRemainingDistance() {
     return (drawDistanceMax - drawDistance) * 100 / drawDistanceMax;
+  }
+
+  Offset getRandomPos(double startX, double endX, double startY, double endY) {
+    return Offset(
+      random.nextDouble() * (endX - startX + 1) + startX,
+      random.nextDouble() * (endY - startY + 1) + startY,
+    );
   }
 
   void dispose() {

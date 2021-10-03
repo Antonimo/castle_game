@@ -4,6 +4,7 @@ import 'package:castle_game/game/base.dart';
 import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game.dart';
 import 'package:castle_game/game/game_client.dart';
+import 'package:castle_game/game/item.dart';
 import 'package:castle_game/game/player.dart';
 import 'package:castle_game/game/unit.dart';
 import 'package:castle_game/util/logger.dart';
@@ -192,6 +193,7 @@ class JoinClient extends GameClient {
   void initGame(Size size) {
     _game?.init(
       size,
+      onPlay: (double dt){},
       onChange: () {}, // joined client does not send game state
       getNextPlayerWithPendingUnit: getNextPlayerWithPendingUnit, // joined client does not send game state
       onGameOver: onGameOver,
@@ -236,6 +238,7 @@ class JoinClient extends GameClient {
     List<Player> players = [];
     List<Base> bases = [];
     List<Unit> units = [];
+    List<Item> items = [];
 
     (gameState['playingState']['players'] as List).forEach((player) {
       players.add(Player.fromPlayState(
@@ -255,10 +258,17 @@ class JoinClient extends GameClient {
         flipCoords: Game.gameSize,
       )!);
     });
+    (gameState['playingState']['items'] as List).forEach((item) {
+      items.add(Item.fromPlayState(
+        item,
+        flipCoords: Game.gameSize,
+      ));
+    });
 
     _game?.players = players;
     _game?.bases = bases;
     _game?.units = units;
+    _game?.items = items;
   }
 
   void givePathToUnit(DrawnLine line, Player player) {

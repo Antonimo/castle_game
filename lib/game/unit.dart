@@ -79,6 +79,8 @@ class Unit {
       moving = false;
     }
 
+    checkForItems(game);
+
     if (moving && path != null && path!.path.isNotEmpty) {
       move(dt);
     }
@@ -110,11 +112,11 @@ class Unit {
   }
 
   void attackUnit(Unit unit) {
-    unit.damage(20); // TODO: random, dmg range
+    unit.damage(5); // TODO: random, dmg range
   }
 
   void attackBase(Base base) {
-    base.damage(20); // TODO: random, dmg range
+    base.damage(5); // TODO: random, dmg range
   }
 
   void damage(double damage) {
@@ -127,6 +129,14 @@ class Unit {
 
   void kill() {
     alive = false;
+  }
+
+  void checkForItems(Game game) {
+    for (var item in game.items) {
+      if ((pos - item.pos).distance < (GameConsts.UNIT_SIZE + GameConsts.POWERUP_SIZE)) {
+        item.collect(this, game);
+      }
+    }
   }
 
   void move(double dt) {

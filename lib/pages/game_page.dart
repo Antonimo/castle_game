@@ -16,6 +16,7 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
+  // ignore: unused_field
   static const String TAG = '[_GamePageState] ';
 
   GameClient? _gameClient;
@@ -62,42 +63,39 @@ class _GamePageState extends State<GamePage> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: buildCurrentPath(context),
+            child: GestureDetector(
+              // TODO: restart game option
+              // onTap: () {
+              //   // _game.toggleGame();
+              //   if (!_gameClient!.game!.running) {
+              //     // _gameClient!.game!.init(MediaQuery.of(context).size);
+              //   }
+              // },
+              onPanStart: onPanStart,
+              onPanUpdate: onPanUpdate,
+              onPanEnd: onPanEnd,
+              child: RepaintBoundary(
+                child: Container(
+                  // width: MediaQuery.of(context).size.width,
+                  // height: MediaQuery.of(context).size.height,
+                  // color: Colors.transparent,
+                  // alignment: Alignment.topLeft,
+                  child: StreamBuilder<double>(
+                    stream: _gameClient!.game!.stateSubject.stream,
+                    builder: (context, snapshot) {
+                      // print('line.path.length ${line.path.length} count: $count distance: $distance');
+
+                      return CustomPaint(
+                        isComplex: true,
+                        painter: GamePainter(_gameClient!.game!, [line]),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget buildCurrentPath(BuildContext context) {
-    return GestureDetector(
-      // TODO: restart game option
-      // onTap: () {
-      //   // _game.toggleGame();
-      //   if (!_gameClient!.game!.running) {
-      //     // _gameClient!.game!.init(MediaQuery.of(context).size);
-      //   }
-      // },
-      onPanStart: onPanStart,
-      onPanUpdate: onPanUpdate,
-      onPanEnd: onPanEnd,
-      child: RepaintBoundary(
-        child: Container(
-          // width: MediaQuery.of(context).size.width,
-          // height: MediaQuery.of(context).size.height,
-          // color: Colors.transparent,
-          // alignment: Alignment.topLeft,
-          child: StreamBuilder<double>(
-            stream: _gameClient!.game!.stateSubject.stream,
-            builder: (context, snapshot) {
-              // print('line.path.length ${line.path.length} count: $count distance: $distance');
-
-              return CustomPaint(
-                painter: GamePainter(_gameClient!.game!, [line]),
-              );
-            },
-          ),
-        ),
       ),
     );
   }

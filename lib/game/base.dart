@@ -36,4 +36,8 @@ class Base {
   void damage(double damage) {
     hp -= damage;
   }
+
+  void heal(double amount) {
+    hp += amount;
+  }
 }
