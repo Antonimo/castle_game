@@ -31,6 +31,7 @@ class Player {
       'startPos': startPos.toJson(),
       'nextUnitCooldown': nextUnitCooldown,
       'pendingUnit': pendingUnit?.toPlayState(),
+      'unitSpeed': unitSpeed,
     };
   }
 
@@ -47,6 +48,8 @@ class Player {
     if (playState['pendingUnit'] != null) {
       player.pendingUnit = Unit.fromPlayState(playState['pendingUnit'], flipCoords: flipCoords);
     }
+    player.unitSpeed = (playState['unitSpeed'] as num).toDouble();
+
     return player;
   }
 

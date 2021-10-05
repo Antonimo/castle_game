@@ -55,7 +55,7 @@ class Item {
     },
   };
 
-  static const Map<ItemType, IconData>icons = {
+  static const Map<ItemType, IconData> icons = {
     ItemType.healBase: Icons.add,
     ItemType.unitsSpeed: Icons.fast_forward,
     ItemType.baseTrap: Icons.star,

@@ -76,6 +76,10 @@ class HostClient extends GameClient {
       attachPathToPendingUnit(data);
     });
 
+    socket!.on('gameAction', (data) {
+      gameAction(data);
+    });
+
     socket!.onDisconnect((_) {
       print('socket!.onDisconnect');
     });
@@ -189,6 +193,16 @@ class HostClient extends GameClient {
     return players.firstWhereOrNull((_player) => (_player.id == _game!.player && _player.pendingUnit != null));
   }
 
+  void onTap(Offset point) {
+    final base = _game!.bases.firstWhereOrNull((Base base) => base.player == _game!.player && (base.pos - point).distance < GameConsts.BASE_SIZE);
+
+    if (base != null && base.hasTrap) {
+      base.activateTrap();
+      _game!.queueOnChange();
+      return;
+    }
+  }
+
   void onGameChange() {
     emitPlayingGameState();
   }
@@ -246,6 +260,16 @@ class HostClient extends GameClient {
     );
   }
 
+  void gameAction(data) {
+    final actionData = data as Map<String, dynamic>;
+    switch (actionData['action']) {
+      case 'ActivateBaseTrap':
+        activateBaseTrap(actionData['player']);
+        break;
+      default:
+    }
+  }
+
   void givePathToUnit(DrawnLine line, Player player) {
     if (_game == null) return;
 
@@ -253,6 +277,16 @@ class HostClient extends GameClient {
 
     _game!.drawPathForPlayer = null;
     _game!.canDrawPath = false;
+  }
+
+  void activateBaseTrap(String player) {
+    final base = _game!.bases.firstWhereOrNull((Base base) => base.player == player);
+
+    if (base != null && base.hasTrap) {
+      base.activateTrap();
+      _game!.queueOnChange();
+      return;
+    }
   }
 
   void onGameOver() {

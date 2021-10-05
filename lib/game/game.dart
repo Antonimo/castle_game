@@ -178,9 +178,6 @@ class Game {
       lastTime = DateTime.now();
     }
     while (running) {
-      // TODO: (nice to have) optimize the delay time to "race" frames
-      await Future.delayed(Duration(milliseconds: 1000 ~/ GameConsts.CALCULATIONS_PER_SECOND));
-
       final DateTime now = DateTime.now();
       double dt = now.difference(lastTime).inMilliseconds / 1000.0;
 
@@ -222,6 +219,9 @@ class Game {
 
       lastTime = now;
       stateSubject.add(0);
+
+      // TODO: (nice to have) optimize the delay time to "race" frames
+      await Future.delayed(Duration(milliseconds: 1000 ~/ GameConsts.CALCULATIONS_PER_SECOND));
     }
   }
 

@@ -173,7 +173,7 @@ class GamePainter extends CustomPainter {
 
       canvas.drawCircle(
         pos,
-        (GameConsts.BASE_SIZE + 16 - (base.trapActiveCooldown! * 6) ) * (adjust?.shortestSide ?? 1), // TODO: DRY
+        (GameConsts.BASE_SIZE + 16 - (base.trapActiveCooldown! * 6)) * (adjust?.shortestSide ?? 1), // TODO: DRY
         trapPaint,
       );
     }

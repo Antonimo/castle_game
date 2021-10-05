@@ -4,6 +4,7 @@ import 'package:castle_game/game/base.dart';
 import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game.dart';
 import 'package:castle_game/game/game_client.dart';
+import 'package:castle_game/game/game_consts.dart';
 import 'package:castle_game/game/item.dart';
 import 'package:castle_game/game/player.dart';
 import 'package:castle_game/game/unit.dart';
@@ -193,7 +194,7 @@ class JoinClient extends GameClient {
   void initGame(Size size) {
     _game?.init(
       size,
-      onPlay: (double dt){},
+      onPlay: (double dt) {},
       onChange: () {}, // joined client does not send game state
       getNextPlayerWithPendingUnit: getNextPlayerWithPendingUnit, // joined client does not send game state
       onGameOver: onGameOver,
@@ -202,6 +203,16 @@ class JoinClient extends GameClient {
 
   Player? getNextPlayerWithPendingUnit(List<Player> players) {
     return players.firstWhereOrNull((_player) => (_player.id == _game!.player && _player.pendingUnit != null));
+  }
+
+  void onTap(Offset point) {
+    final base = _game!.bases.firstWhereOrNull((Base base) => base.player == _game!.player && (base.pos - point).distance < GameConsts.BASE_SIZE);
+
+    if (base != null && base.hasTrap) {
+      base.activateTrap();
+      emitActivateBaseTrap(base.player);
+      return;
+    }
   }
 
   void applyPlayingGameState(dynamic gameState) {
@@ -278,6 +289,13 @@ class JoinClient extends GameClient {
         // adjust: _game?.adjustBack,
       ),
       'player': player.id,
+    });
+  }
+
+  void emitActivateBaseTrap(String player) {
+    socket?.emit('gameAction', {
+      'player': player,
+      'action': 'ActivateBaseTrap',
     });
   }
 

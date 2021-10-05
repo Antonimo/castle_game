@@ -24,6 +24,8 @@ class Base {
       'color': color.value,
       'maxHp': maxHp,
       'hp': hp,
+      'hasTrap': hasTrap,
+      'trapActiveCooldown': trapActiveCooldown,
     };
   }
 
@@ -35,6 +37,10 @@ class Base {
     );
     base.maxHp = (playState['maxHp'] as num).toDouble();
     base.hp = (playState['hp'] as num).toDouble();
+    base.hasTrap = playState['hasTrap'];
+    if (playState['trapActiveCooldown'] != null) {
+      base.trapActiveCooldown = (playState['trapActiveCooldown'] as num).toDouble();
+    }
     return base;
   }
 
