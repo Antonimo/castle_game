@@ -1,7 +1,9 @@
 import 'package:castle_game/app_router.dart';
+import 'package:castle_game/game/base.dart';
 import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game.dart';
 import 'package:castle_game/game/game_client.dart';
+import 'package:castle_game/game/game_consts.dart';
 import 'package:castle_game/game/player.dart';
 import 'package:castle_game/util/logger.dart';
 import 'package:collection/collection.dart';
@@ -68,6 +70,15 @@ class MultiplayerClient extends GameClient {
   Player? getNextPlayerWithPendingUnit(List<Player> players) {
     if (_game!.drawPathForPlayer != null) return _game!.drawPathForPlayer;
     return players.firstWhereOrNull((player) => player.pendingUnit != null);
+  }
+
+  void onTap(Offset point) {
+    final base = _game!.bases.firstWhereOrNull((Base base) => (base.pos - point).distance < GameConsts.BASE_SIZE);
+
+    if (base != null && base.hasTrap) {
+      base.activateTrap();
+      return;
+    }
   }
 
   void givePathToUnit(DrawnLine line, Player player) {

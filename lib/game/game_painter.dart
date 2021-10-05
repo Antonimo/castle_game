@@ -80,6 +80,8 @@ class GamePainter extends CustomPainter {
   }
 
   void drawBase(Canvas canvas, Base base, Size? adjust) {
+    final pos = base.pos.adjust(adjust);
+
     // HP
     Paint hpPaint = Paint()
       ..color = Colors.redAccent.withOpacity(0.8)
@@ -93,7 +95,7 @@ class GamePainter extends CustomPainter {
     canvas.drawArc(
       // TODO: adjust sizes of all elements too.
       Rect.fromCircle(
-        center: base.pos.adjust(adjust),
+        center: pos,
         radius: GameConsts.BASE_SIZE * (adjust?.shortestSide ?? 1),
       ),
       -90 * pi / 180,
@@ -102,9 +104,7 @@ class GamePainter extends CustomPainter {
       hpPaint,
     );
 
-
     if (base.hp > base.maxHp) {
-
       // Extra HP
       Paint hpPaint = Paint()
         ..color = Colors.purple.withOpacity(0.8)
@@ -120,7 +120,7 @@ class GamePainter extends CustomPainter {
       canvas.drawArc(
         // TODO: adjust sizes of all elements too.
         Rect.fromCircle(
-          center: base.pos.adjust(adjust),
+          center: pos,
           radius: GameConsts.BASE_SIZE * (adjust?.shortestSide ?? 1),
         ),
         -90 * pi / 180,
@@ -130,7 +130,6 @@ class GamePainter extends CustomPainter {
       );
     }
 
-
     // Border
     Paint basePaint = Paint()
       ..color = base.color
@@ -139,10 +138,45 @@ class GamePainter extends CustomPainter {
       ..strokeWidth = 3.0 * (adjust?.shortestSide ?? 1);
 
     canvas.drawCircle(
-      base.pos.adjust(adjust),
+      pos,
       GameConsts.BASE_SIZE * (adjust?.shortestSide ?? 1), // TODO: DRY
       basePaint,
     );
+
+    // Has Trap
+    if (base.hasTrap) {
+      final icon = Icons.star;
+      final iconSize = GameConsts.BASE_SIZE;
+      TextPainter textPainter = TextPainter(
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center,
+      );
+      textPainter.text = TextSpan(
+        text: String.fromCharCode(icon.codePoint),
+        style: TextStyle(
+          fontSize: iconSize,
+          fontFamily: icon.fontFamily,
+          color: Colors.red,
+        ),
+      );
+      textPainter.layout();
+      textPainter.paint(canvas, pos.translate(-iconSize / 2, -iconSize / 2));
+    }
+
+    // Trap Active
+    if (base.trapActiveCooldown != null) {
+      Paint trapPaint = Paint()
+        ..color = Colors.red.withOpacity(0.7)
+        ..style = PaintingStyle.stroke
+        ..isAntiAlias = true
+        ..strokeWidth = (base.trapActiveCooldown! * 6) * (adjust?.shortestSide ?? 1);
+
+      canvas.drawCircle(
+        pos,
+        (GameConsts.BASE_SIZE + 16 - (base.trapActiveCooldown! * 6) ) * (adjust?.shortestSide ?? 1), // TODO: DRY
+        trapPaint,
+      );
+    }
   }
 
   void drawUnitPath(Canvas canvas, DrawnLine line, Size? adjust) {

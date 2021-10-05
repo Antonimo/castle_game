@@ -12,6 +12,8 @@ class GameClient {
 
   void initGame(Size size) {}
 
+  void onTap(Offset point) {}
+
   void givePathToUnit(DrawnLine line, Player player) {}
 
   Future<void> showGameOver() async {

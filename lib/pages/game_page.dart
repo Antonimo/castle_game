@@ -64,13 +64,11 @@ class _GamePageState extends State<GamePage> {
         children: [
           Positioned.fill(
             child: GestureDetector(
-              // TODO: restart game option
-              // onTap: () {
-              //   // _game.toggleGame();
-              //   if (!_gameClient!.game!.running) {
-              //     // _gameClient!.game!.init(MediaQuery.of(context).size);
-              //   }
-              // },
+              onTapDown: (TapDownDetails details) {
+                if (_gameClient?.game?.running ?? false) {
+                  _gameClient!.onTap(details.globalPosition.adjust(_gameClient?.game?.adjustBack));
+                }
+              },
               onPanStart: onPanStart,
               onPanUpdate: onPanUpdate,
               onPanEnd: onPanEnd,
@@ -84,6 +82,8 @@ class _GamePageState extends State<GamePage> {
                     stream: _gameClient!.game!.stateSubject.stream,
                     builder: (context, snapshot) {
                       // print('line.path.length ${line.path.length} count: $count distance: $distance');
+
+                      _gameClient!.game!.updateSize(MediaQuery.of(context).size);
 
                       return CustomPaint(
                         isComplex: true,

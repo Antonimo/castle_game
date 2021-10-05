@@ -50,8 +50,8 @@ class Item {
       });
     },
     ItemType.baseTrap: (Unit unit, Game game) {
-      // final base = game.bases.firstWhere((Base base) => base.player == unit.player);
-      // base.heal(50);
+      final base = game.bases.firstWhere((Base base) => base.player == unit.player);
+      base.addTrap();
     },
   };
 

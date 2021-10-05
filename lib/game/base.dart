@@ -1,4 +1,6 @@
+import 'package:castle_game/game/game.dart';
 import 'package:castle_game/game/game_consts.dart';
+import 'package:castle_game/game/unit.dart';
 import 'package:castle_game/util/json_offset.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +11,9 @@ class Base {
 
   double maxHp = GameConsts.BASE_MAX_HP;
   double hp = GameConsts.BASE_MAX_HP;
+
+  bool hasTrap = false;
+  double? trapActiveCooldown;
 
   Base(this.player, this.pos, this.color);
 
@@ -33,11 +38,36 @@ class Base {
     return base;
   }
 
+  void play(double dt, Game game) {
+    if (trapActiveCooldown != null) {
+      trapActiveCooldown = trapActiveCooldown! - dt;
+
+      game.units.forEach((Unit unit) {
+        if ((unit.pos - pos).distance < GameConsts.BASE_TRAP_DISTANCE) {
+          unit.damage(24 * dt);
+        }
+      });
+
+      if (trapActiveCooldown! <= 0.0) {
+        trapActiveCooldown = null;
+      }
+    }
+  }
+
   void damage(double damage) {
     hp -= damage;
   }
 
   void heal(double amount) {
     hp += amount;
+  }
+
+  void addTrap() {
+    hasTrap = true;
+  }
+
+  void activateTrap() {
+    hasTrap = false;
+    trapActiveCooldown = 3.0;
   }
 }

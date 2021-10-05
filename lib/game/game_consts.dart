@@ -26,4 +26,5 @@ class GameConsts {
 
   static const UNIT_ENGAGE_DISTANCE = 17.0; // size * 2 + 1
   static const UNIT_ENGAGE_BASE_DISTANCE = 32.0; // base size + 2
+  static const BASE_TRAP_DISTANCE = 50.0;
 }

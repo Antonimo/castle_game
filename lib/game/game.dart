@@ -98,6 +98,16 @@ class Game {
 
     this.onGameOver = onGameOver;
 
+    updateSize(size);
+
+    // TODO: make game map fit while maintaining aspect ratio
+
+    canDrawPath = false;
+
+    toggleGame();
+  }
+
+  void updateSize(Size size) {
     this.size = size;
 
     adjust = Size(
@@ -108,12 +118,6 @@ class Game {
       gameSize.width / size.width,
       gameSize.height / size.height,
     );
-
-    // TODO: make game map fit while maintaining aspect ratio
-
-    canDrawPath = false;
-
-    toggleGame();
   }
 
   void resetGame() {
@@ -190,6 +194,10 @@ class Game {
 
       units.forEach((unit) {
         unit.play(dt, this);
+      });
+
+      bases.forEach((base) {
+        base.play(dt, this);
       });
 
       // Clear dead units
