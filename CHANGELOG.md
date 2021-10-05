@@ -15,3 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - multiplayer
 - powerups: heal base
 
+## [1.0.5+6] -
+### Added
+- powerups: unit speed
+- powerups: base trap
+
+### Fixed
+sometimes coordinates are wrong
+
