@@ -1,4 +1,5 @@
 import 'package:castle_game/game/game.dart';
+import 'package:castle_game/game/game_consts.dart';
 import 'package:castle_game/game/unit.dart';
 import 'package:castle_game/util/json_offset.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,8 @@ class Player {
 
   double? nextUnitCooldown;
   Unit? pendingUnit;
+
+  double unitSpeed = GameConsts.UNIT_SPEED;
 
   Player(
     this.id,
@@ -56,5 +59,9 @@ class Player {
         pendingUnit = game.createPendingUnit(this);
       }
     }
+  }
+
+  void updateUnitSpeed(double speedBonus) {
+    unitSpeed += speedBonus;
   }
 }

@@ -22,7 +22,7 @@ class GameConsts {
   static const INITIAL_NEXT_UNIT_COOLDOWN = 3.0;
   static const NEXT_UNIT_COOLDOWN = 5.0;
   static const UNIT_ENGAGED_COOLDOWN = 1.0;
-  static const NEXT_POWERUP_COOLDOWN = 12.0;
+  static const NEXT_POWERUP_COOLDOWN = 8.0;
 
   static const UNIT_ENGAGE_DISTANCE = 17.0; // size * 2 + 1
   static const UNIT_ENGAGE_BASE_DISTANCE = 32.0; // base size + 2

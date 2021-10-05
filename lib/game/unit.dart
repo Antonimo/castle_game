@@ -173,4 +173,8 @@ class Unit {
       path!.path.removeAt(0);
     }
   }
+
+  void updateSpeed(double speedBonus) {
+    speed += speedBonus;
+  }
 }

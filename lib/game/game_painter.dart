@@ -102,11 +102,41 @@ class GamePainter extends CustomPainter {
       hpPaint,
     );
 
+
+    if (base.hp > base.maxHp) {
+
+      // Extra HP
+      Paint hpPaint = Paint()
+        ..color = Colors.purple.withOpacity(0.8)
+        ..style = PaintingStyle.stroke
+        ..style = PaintingStyle.fill
+        ..strokeWidth = GameConsts.BASE_SIZE // TODO: adjusted
+        ..isAntiAlias = true;
+
+      // print('hp angle: ${base.hp * 360 / base.maxHp}  radians: ${base.hp * 360 / base.maxHp * pi / 180}');
+
+      final extraHp = base.maxHp - base.hp;
+
+      canvas.drawArc(
+        // TODO: adjust sizes of all elements too.
+        Rect.fromCircle(
+          center: base.pos.adjust(adjust),
+          radius: GameConsts.BASE_SIZE * (adjust?.shortestSide ?? 1),
+        ),
+        -90 * pi / 180,
+        -extraHp * 360 / base.maxHp * pi / 180,
+        true,
+        hpPaint,
+      );
+    }
+
+
     // Border
     Paint basePaint = Paint()
       ..color = base.color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 5.0 * (adjust?.shortestSide ?? 1);
+      ..isAntiAlias = true
+      ..strokeWidth = 3.0 * (adjust?.shortestSide ?? 1);
 
     canvas.drawCircle(
       base.pos.adjust(adjust),
@@ -154,7 +184,8 @@ class GamePainter extends CustomPainter {
     Paint unitPaint = Paint()
       ..color = unit.color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0 * (adjust?.shortestSide ?? 1);
+      ..isAntiAlias = true
+      ..strokeWidth = 1.0 * (adjust?.shortestSide ?? 1);
 
     canvas.drawCircle(
       unit.pos.adjust(adjust),
@@ -197,7 +228,8 @@ class GamePainter extends CustomPainter {
       itemPaint,
     );
 
-    final icon = Icons.add;
+    final IconData icon = Item.icons[item.type]!;
+
     TextPainter textPainter = TextPainter(
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.center,

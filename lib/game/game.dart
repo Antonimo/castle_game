@@ -237,11 +237,15 @@ class Game {
     // TODO: setState system?
     queueOnChange();
 
-    return Unit(
+    final unit = Unit(
       player.id,
       player.color,
       player.startPos,
     );
+
+    unit.speed = player.unitSpeed;
+
+    return unit;
   }
 
   // TODO: emit on change on remove units and items
@@ -299,9 +303,10 @@ class Game {
     }
   }
 
+  // TODO: move to game client base?
   void addPowerUp() {
     // TODO: randomize powerups?
-    final nextPowerUpType = ItemType.healBase;
+    final nextPowerUpType = getChancePowerUp();
 
     // TODO: find free spot
     Offset pos = getRandomPos(
@@ -323,6 +328,19 @@ class Game {
 
   double getDrawRemainingDistance() {
     return (drawDistanceMax - drawDistance) * 100 / drawDistanceMax;
+  }
+
+  ItemType getChancePowerUp() {
+    final score = random.nextDouble();
+
+    if (score < 0.2) {
+      return ItemType.baseTrap;
+    }
+    if (score < 0.6) {
+      return ItemType.healBase;
+    }
+
+    return ItemType.unitsSpeed;
   }
 
   Offset getRandomPos(double startX, double endX, double startY, double endY) {
