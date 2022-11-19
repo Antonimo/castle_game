@@ -80,6 +80,15 @@ class Game {
     _runTheGame();
   }
 
+  void runGame() {
+    running = true;
+    _runTheGame();
+  }
+
+  void stopGame() {
+    running = false;
+  }
+
   void init(
     Size size, {
     required Function onPlay,
@@ -154,6 +163,8 @@ class Game {
     players.forEach((player) {
       player.nextUnitCooldown = GameConsts.INITIAL_NEXT_UNIT_COOLDOWN;
     });
+
+    players.first.nextUnitCooldown = 0;
 
     bases.add(
       Base(
@@ -303,6 +314,8 @@ class Game {
   }
 
   void playPowerUps(double dt) {
+    // print('playPowerUps() dt: $dt | nextPowerUpCooldown: $nextPowerUpCooldown');
+
     nextPowerUpCooldown = nextPowerUpCooldown - dt;
 
     if (nextPowerUpCooldown <= 0.0) {

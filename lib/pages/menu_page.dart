@@ -33,7 +33,7 @@ class MenuPage extends StatelessWidget {
               onPressed: () {
                 AppRouter.instance.navTo(AppRouter.routeMultiplayer);
               },
-              child: const Text('Multiplayer'),
+              child: const Text('Local Multiplayer'),
             ),
           ],
         ),

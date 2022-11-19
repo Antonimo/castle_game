@@ -13,11 +13,12 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
   void initState() {
     super.initState();
 
-    MultiplayerClient.init();
+    // MultiplayerClient.init();
   }
 
   @override
   void dispose() {
+    print('MultiplayerClient.dispose()');
     MultiplayerClient.dispose();
 
     super.dispose();
@@ -46,7 +47,12 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
       SizedBox(height: 32.0),
       ElevatedButton(
         onPressed: () {
+          MultiplayerClient.dispose();
+          MultiplayerClient.init();
+
           MultiplayerClient.startGame();
+
+          // TODO: pause game, restart game;
         },
         child: const Text('Start Game'),
       ),

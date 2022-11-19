@@ -16,6 +16,10 @@ class GameClient {
 
   void givePathToUnit(DrawnLine line, Player player) {}
 
+  void saveState() {}
+
+  void loadState() {}
+
   Future<void> showGameOver() async {
     return showDialog<void>(
       context: AppRouter.appNavigatorKey.currentContext!,

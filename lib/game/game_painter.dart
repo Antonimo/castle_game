@@ -193,39 +193,7 @@ class GamePainter extends CustomPainter {
   }
 
   void drawUnit(Canvas canvas, Unit unit, Size? adjust) {
-    // HP
-    Paint hpPaint = Paint()
-      ..color = Colors.redAccent.withOpacity(0.8)
-      ..style = PaintingStyle.stroke
-      ..style = PaintingStyle.fill
-      ..strokeWidth = GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1)
-      ..isAntiAlias = true;
-
-    // print('hp angle: ${base.hp * 360 / base.maxHp}  radians: ${base.hp * 360 / base.maxHp * pi / 180}');
-
-    canvas.drawArc(
-      Rect.fromCircle(
-        center: unit.pos.adjust(adjust),
-        radius: GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1), // TODO: DRY
-      ), // TODO: adjusted
-      -90 * pi / 180,
-      -unit.hp * 360 / unit.maxHp * pi / 180,
-      true,
-      hpPaint,
-    );
-
-    // Border
-    Paint unitPaint = Paint()
-      ..color = unit.color
-      ..style = PaintingStyle.stroke
-      ..isAntiAlias = true
-      ..strokeWidth = 1.0 * (adjust?.shortestSide ?? 1);
-
-    canvas.drawCircle(
-      unit.pos.adjust(adjust),
-      GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1),
-      unitPaint,
-    );
+    unit.draw(canvas, adjust);
   }
 
   void drawPendingUnit(Canvas canvas, Unit unit, Size? adjust) {

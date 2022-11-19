@@ -1,3 +1,7 @@
+import 'dart:math';
+
+import 'package:castle_game/game/animation/animation_engine.dart';
+import 'package:castle_game/game/animation/unit_attack/unit_attack_animation.dart';
 import 'package:castle_game/game/base.dart';
 import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game.dart';
@@ -10,6 +14,11 @@ class Unit {
   Color color;
   Offset pos;
   DrawnLine? path;
+
+  // TODO: base game type that has pos
+  dynamic engagedTarget;
+
+  AnimationEngine animation = new AnimationEngine();
 
   double maxHp = GameConsts.UNIT_MAX_HP;
   double hp = GameConsts.UNIT_MAX_HP;
@@ -61,6 +70,13 @@ class Unit {
   void play(double dt, Game game) {
     if (!alive) return;
 
+    // if (player == 'p1') {
+    //   AnimationEngine.debug = true;
+    // } else {
+    //   AnimationEngine.debug = false;
+    // }
+    animation.animate(dt);
+
     if (cooldown != null) {
       cooldown = cooldown! - dt;
       if (cooldown! < 0) {
@@ -77,6 +93,7 @@ class Unit {
     if (engaged) {
       cooldown = GameConsts.UNIT_ENGAGED_COOLDOWN;
       moving = false;
+      animation.setAnimation(new UnitAttackAnimation(this));
     }
 
     checkForItems(game);
@@ -94,6 +111,7 @@ class Unit {
     for (var unit in game.units) {
       if (unit.player == player) continue;
       if ((pos - unit.pos).distance < GameConsts.UNIT_ENGAGE_DISTANCE) {
+        engagedTarget = unit;
         attackUnit(unit);
         return true;
       }
@@ -103,11 +121,13 @@ class Unit {
     for (var base in game.bases) {
       if (base.player == player) continue;
       if ((pos - base.pos).distance < GameConsts.UNIT_ENGAGE_BASE_DISTANCE) {
+        engagedTarget = base;
         attackBase(base);
         return true;
       }
     }
 
+    engagedTarget = null;
     return false;
   }
 
@@ -176,5 +196,63 @@ class Unit {
 
   void updateSpeed(double speedBonus) {
     speed += speedBonus;
+  }
+
+  void draw(Canvas canvas, Size? adjust) {
+    Offset drawPos = pos + animation.animationOffset;
+    drawHP(canvas, adjust, drawPos);
+    drawUnitAnimationState(canvas, adjust, drawPos);
+    drawDebug(canvas, adjust, pos);
+  }
+
+  void drawHP(Canvas canvas, Size? adjust, Offset drawPos) {
+    Paint hpPaint = Paint()
+      ..color = Colors.redAccent.withOpacity(0.8)
+      ..style = PaintingStyle.stroke
+      ..style = PaintingStyle.fill
+      ..strokeWidth = GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1)
+      ..isAntiAlias = true;
+
+    // print('hp angle: ${base.hp * 360 / base.maxHp}  radians: ${base.hp * 360 / base.maxHp * pi / 180}');
+    canvas.drawArc(
+      Rect.fromCircle(
+        center: drawPos.adjust(adjust),
+        radius: GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1), // TODO: DRY
+      ), // TODO: adjusted
+      -90 * pi / 180,
+      -this.hp * 360 / this.maxHp * pi / 180,
+      true,
+      hpPaint,
+    );
+  }
+
+  void drawUnitAnimationState(Canvas canvas, Size? adjust, Offset drawPos) {
+    // Border
+    Paint unitPaint = Paint()
+      ..color = this.color
+      ..style = PaintingStyle.stroke
+      ..isAntiAlias = true
+      ..strokeWidth = 1.0 * (adjust?.shortestSide ?? 1);
+
+    canvas.drawCircle(
+      drawPos.adjust(adjust),
+      GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1),
+      unitPaint,
+    );
+  }
+
+  void drawDebug(Canvas canvas, Size? adjust, Offset drawPos) {
+    // Border
+    Paint unitPaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.fill
+      ..isAntiAlias = false
+      ..strokeWidth = 2.5 * (adjust?.shortestSide ?? 1);
+
+    canvas.drawCircle(
+      drawPos.adjust(adjust),
+      (adjust?.shortestSide ?? 1),
+      unitPaint,
+    );
   }
 }

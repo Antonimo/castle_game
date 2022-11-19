@@ -186,6 +186,7 @@ class HostClient extends GameClient {
   }
 
   void onPlay(double dt) {
+    // TODO: DRY ?
     _game?.playPowerUps(dt);
   }
 
@@ -226,6 +227,7 @@ class HostClient extends GameClient {
     Map playingGameState = {
       // 'size': _game!.size?.toJson(),
       'id': _game!.id,
+      // TODO: use relative game time, how much time elapsed
       'time': DateTime.now().millisecondsSinceEpoch,
       'players': [],
       'bases': [],
