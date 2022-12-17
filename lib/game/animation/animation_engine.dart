@@ -1,4 +1,5 @@
 import 'package:castle_game/game/animation/game_animation.dart';
+import 'package:castle_game/game/sprite.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +10,10 @@ class AnimationEngine {
   double animationTime = 0.0;
 
   GameAnimation? animation;
+
+  int currentSprite = 0;
+  // the sprites for current animation
+  List<Sprite> sprites = [];
 
   void setAnimation(animation) {
     this.animation = animation;
@@ -21,6 +26,7 @@ class AnimationEngine {
   void animate(double dt) {
     animation?.before(this);
 
+    // TODO: or move to default?
     if (animation == null) {
       animationTime = 0.0;
       animationOffset = Offset.zero;

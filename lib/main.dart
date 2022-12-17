@@ -2,6 +2,7 @@ import 'package:castle_game/app_router.dart';
 import 'package:castle_game/pages/menu_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:wakelock/wakelock.dart';
 
 // TODO: init settings
 // TODO: disable rotation
@@ -19,6 +20,8 @@ void main() async {
     print(errorDetails.stack);
     return Container(color: Colors.red);
   };
+
+  Wakelock.enable();
 
   runApp(MyApp());
 }

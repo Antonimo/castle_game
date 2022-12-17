@@ -72,6 +72,16 @@ class _GamePageState extends State<GamePage> {
       body: Stack(
         children: [
           Positioned.fill(
+            child: Container(
+              color: Colors.black,
+              child: Image.asset(
+                  'assets/game_textures/floors/floor1.jpg',
+                repeat: ImageRepeat.repeat,
+                // alignment: Alignment.topLeft,
+              ),
+            ),
+          ),
+          Positioned.fill(
             child: GestureDetector(
               onTapDown: (TapDownDetails details) {
                 if (_gameClient?.game?.running ?? false) {

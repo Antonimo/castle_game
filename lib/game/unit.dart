@@ -2,10 +2,12 @@ import 'dart:math';
 
 import 'package:castle_game/game/animation/animation_engine.dart';
 import 'package:castle_game/game/animation/unit_attack/unit_attack_animation.dart';
+import 'package:castle_game/game/animation/unit_walk/unit_walk_animation.dart';
 import 'package:castle_game/game/base.dart';
 import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game.dart';
 import 'package:castle_game/game/game_consts.dart';
+import 'package:castle_game/game/sprite.dart';
 import 'package:castle_game/util/json_offset.dart';
 import 'package:flutter/material.dart';
 
@@ -15,10 +17,12 @@ class Unit {
   Offset pos;
   DrawnLine? path;
 
+  double facingDirection = 0;
+
   // TODO: base game type that has pos
   dynamic engagedTarget;
 
-  AnimationEngine animation = new AnimationEngine();
+  AnimationEngine animation = AnimationEngine();
 
   double maxHp = GameConsts.UNIT_MAX_HP;
   double hp = GameConsts.UNIT_MAX_HP;
@@ -32,7 +36,14 @@ class Unit {
   bool moving = false;
   double? cooldown;
 
-  Unit(this.player, this.color, this.pos);
+  Unit(this.player, this.color, this.pos) {
+    initDefaultAnimation();
+    // todo: for player 1 facing up, player 2 facing down
+  }
+
+  void initDefaultAnimation() {
+    animation.setAnimation(UnitWalkAnimation(this));
+  }
 
   Map toPlayState() {
     return {
@@ -93,13 +104,16 @@ class Unit {
     if (engaged) {
       cooldown = GameConsts.UNIT_ENGAGED_COOLDOWN;
       moving = false;
-      animation.setAnimation(new UnitAttackAnimation(this));
+      animation.setAnimation(UnitAttackAnimation(this));
+      // TODO: calculate facing direction
+      // this.facingDirection
     }
 
     checkForItems(game);
 
     if (moving && path != null && path!.path.isNotEmpty) {
       move(dt);
+      animation.setAnimation(UnitWalkAnimation(this));
     }
   }
 
@@ -176,12 +190,14 @@ class Unit {
 
       final double distanceToPoint = diffOffset.distance;
 
+      this.facingDirection = diffOffset.direction;
+
       // print('distanceToPoint: $distanceToPoint remaining distance: $distance');
 
       if (distance <= distanceToPoint) {
         // print('distance <= distanceToPoint !!');
 
-        pos = pos + Offset.fromDirection(diffOffset.direction, distance);
+        pos = pos + Offset.fromDirection(this.facingDirection, distance);
 
         return;
       }
@@ -198,14 +214,14 @@ class Unit {
     speed += speedBonus;
   }
 
-  void draw(Canvas canvas, Size? adjust) {
+  void draw(Canvas canvas, List<Sprite> sprites, Size? adjust) {
     Offset drawPos = pos + animation.animationOffset;
-    drawHP(canvas, adjust, drawPos);
-    drawUnitAnimationState(canvas, adjust, drawPos);
-    drawDebug(canvas, adjust, pos);
+    // drawHP(canvas, drawPos, adjust);
+    drawUnitAnimationState(canvas, sprites, drawPos, adjust);
+    // drawDebug(canvas, pos, adjust);
   }
 
-  void drawHP(Canvas canvas, Size? adjust, Offset drawPos) {
+  void drawHP(Canvas canvas, Offset drawPos, Size? adjust) {
     Paint hpPaint = Paint()
       ..color = Colors.redAccent.withOpacity(0.8)
       ..style = PaintingStyle.stroke
@@ -226,7 +242,7 @@ class Unit {
     );
   }
 
-  void drawUnitAnimationState(Canvas canvas, Size? adjust, Offset drawPos) {
+  void drawUnitAnimationState(Canvas canvas, List<Sprite> sprites, Offset drawPos, Size? adjust) {
     // Border
     Paint unitPaint = Paint()
       ..color = this.color
@@ -234,14 +250,18 @@ class Unit {
       ..isAntiAlias = true
       ..strokeWidth = 1.0 * (adjust?.shortestSide ?? 1);
 
-    canvas.drawCircle(
-      drawPos.adjust(adjust),
-      GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1),
-      unitPaint,
-    );
+    // canvas.drawCircle(
+    //   drawPos.adjust(adjust),
+    //   GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1),
+    //   unitPaint,
+    // );
+
+    Paint unitSpritePaint = Paint();
+
+    sprites[animation.currentSprite].draw(canvas, drawPos.adjust(adjust), unitSpritePaint);
   }
 
-  void drawDebug(Canvas canvas, Size? adjust, Offset drawPos) {
+  void drawDebug(Canvas canvas, Offset drawPos, Size? adjust) {
     // Border
     Paint unitPaint = Paint()
       ..color = Colors.black

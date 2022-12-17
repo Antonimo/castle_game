@@ -193,7 +193,8 @@ class GamePainter extends CustomPainter {
   }
 
   void drawUnit(Canvas canvas, Unit unit, Size? adjust) {
-    unit.draw(canvas, adjust);
+    // TODO: use enum? map?
+    unit.draw(canvas, this.game.assets['unit']!, adjust);
   }
 
   void drawPendingUnit(Canvas canvas, Unit unit, Size? adjust) {
