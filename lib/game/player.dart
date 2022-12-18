@@ -16,11 +16,14 @@ class Player {
 
   double unitSpeed = GameConsts.UNIT_SPEED;
 
+  String unitsSpritesCollectionName;
+
   Player(
     this.id,
     this.name,
     this.color,
     this.startPos,
+    this.unitsSpritesCollectionName,
   );
 
   Map toPlayState() {
@@ -41,6 +44,8 @@ class Player {
       playState['name'],
       Color(playState['color']),
       Offset.zero.fromJson(playState['startPos']).flip(flipCoords),
+      // TODO: get the sprite name
+      'unit1',
     );
     if (playState['nextUnitCooldown'] != null) {
       player.nextUnitCooldown = (playState['nextUnitCooldown'] as num).toDouble();

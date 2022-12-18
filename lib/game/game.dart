@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
+import 'package:castle_game/game/numbers.dart';
 import 'package:image/image.dart' as image;
 import 'package:castle_game/game/load_assets.dart';
 import 'package:flutter/material.dart';
@@ -77,6 +78,8 @@ class Game {
   // Game assets
   Map<String, List<Sprite>> assets = {};
 
+  List<int> playerSpritesIndexes = [];
+
   void setState() {
     stateSubject.add(0.0);
   }
@@ -119,9 +122,16 @@ class Game {
 
     canDrawPath = false;
 
+    // Select random distinct sprite collection for each player
+    playerSpritesIndexes = getTwoRandomDistinctNumbers();
+
+    // TODO: load assets async? while showing loading animation?
     loadAssets(this).then((_) {
       // TODO: loading state?
 
+      print('Loaded assets! ${assets}');
+
+      // Toggle game only after _game?.initObjects ?
       toggleGame();
     });
   }
@@ -159,6 +169,7 @@ class Game {
         Colors.orange,
         // TODO: use %, cast to Offset
         Offset(gameSize.width / 2, gameSize.height - GameConsts.UNIT_SIZE - 2),
+        'unit${playerSpritesIndexes[0]}',
       ),
     );
     players.add(
@@ -167,6 +178,7 @@ class Game {
         'p2',
         Colors.purple,
         Offset(gameSize.width / 2, GameConsts.UNIT_SIZE + 2),
+        'unit${playerSpritesIndexes[1]}',
       ),
     );
 
@@ -270,6 +282,7 @@ class Game {
       player.id,
       player.color,
       player.startPos,
+      player.unitsSpritesCollectionName,
     );
 
     unit.speed = player.unitSpeed;

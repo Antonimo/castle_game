@@ -60,6 +60,7 @@ class MultiplayerClient extends GameClient {
   }
 
   void initGame(Size size) {
+    // TODO: initObjects also resets game..
     _game?.resetGame();
     _game?.init(
       size,
@@ -70,7 +71,7 @@ class MultiplayerClient extends GameClient {
     );
     _game?.initObjects();
 
-    loadState();
+    // loadState();
   }
 
   void onPlay(double dt) {

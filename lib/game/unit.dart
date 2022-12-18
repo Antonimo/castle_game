@@ -34,9 +34,10 @@ class Unit {
   bool moving = false;
   double? cooldown;
 
-  Unit(this.player, this.color, this.pos) {
+  String spritesCollectionName;
+
+  Unit(this.player, this.color, this.pos, this.spritesCollectionName) {
     initDefaultAnimation();
-    // todo: for player 1 facing up, player 2 facing down
   }
 
   void initDefaultAnimation() {
@@ -65,6 +66,8 @@ class Unit {
       playState['player'],
       Color(playState['color']),
       Offset.zero.fromJson(playState['pos']).flip(flipCoords),
+      // TODO: get sprite name
+      '',
     );
     unit.path = DrawnLine.fromPlayState(playState['path'], flipCoords: flipCoords);
     unit.maxHp = double.parse(playState['maxHp'].toString());

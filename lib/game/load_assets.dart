@@ -12,8 +12,11 @@ Future<void> loadAssets(Game game) async {
 }
 
 Future<void> loadCharacterSprites(Game game) async {
-  for (var i = 1; i <= 10; i++) {
-    await loadCharacterSprite(game, "assets/game_textures/chars/$i walk.png", "unit$i");
+  print('game.playerSpritesIndexes: ${game.playerSpritesIndexes}');
+
+  for (var i = 0; i < game.playerSpritesIndexes.length; i++) {
+    final spriteIndex = game.playerSpritesIndexes[i];
+    await loadCharacterSprite(game, "assets/game_textures/chars/$spriteIndex walk.png", "unit$spriteIndex");
   }
 }
 
