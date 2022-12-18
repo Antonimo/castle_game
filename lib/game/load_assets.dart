@@ -51,8 +51,6 @@ Future<void> loadCharacterSprite(Game game, String path, String collectionName) 
   }
 
   // add left facing animation by flipping the right facing animation
-  print(' ');
-  print('Loading Left');
   for (var row = 0; row < spriteRows; row++) {
     unitSprites.add(
       await Sprite.flip(unitSprites[spriteColumns * spriteRows - spriteRows + row]),

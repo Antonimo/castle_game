@@ -6,8 +6,8 @@ class GameConsts {
   // Sizes
   static const BASE_SIZE = 30.0;
   static const UNIT_SIZE = 16.0;
-  static const PENDING_UNIT_MARKER_SIZE = 15.0;
-  static const POWERUP_SIZE = 8.0;
+  static const PENDING_UNIT_MARKER_SIZE = 20.0;
+  static const POWERUP_SIZE = 10.0;
 
   // Stats
   static const BASE_MAX_HP = 300.0;

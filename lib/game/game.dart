@@ -158,7 +158,7 @@ class Game {
         'p1',
         Colors.orange,
         // TODO: use %, cast to Offset
-        Offset(gameSize.width / 2, gameSize.height - 10),
+        Offset(gameSize.width / 2, gameSize.height - GameConsts.UNIT_SIZE - 2),
       ),
     );
     players.add(
@@ -166,7 +166,7 @@ class Game {
         'p2',
         'p2',
         Colors.purple,
-        Offset(gameSize.width / 2, 10),
+        Offset(gameSize.width / 2, GameConsts.UNIT_SIZE + 2),
       ),
     );
 

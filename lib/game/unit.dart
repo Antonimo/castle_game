@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:castle_game/game/animation/animation_engine.dart';
 import 'package:castle_game/game/animation/unit_attack/unit_attack_animation.dart';
 import 'package:castle_game/game/animation/unit_walk/unit_walk_animation.dart';
@@ -216,30 +214,41 @@ class Unit {
 
   void draw(Canvas canvas, List<Sprite> sprites, Size? adjust) {
     Offset drawPos = pos + animation.animationOffset;
-    // drawHP(canvas, drawPos, adjust);
     drawUnitAnimationState(canvas, sprites, drawPos, adjust);
+    drawHP(canvas, drawPos, adjust);
     // drawDebug(canvas, pos, adjust);
   }
 
   void drawHP(Canvas canvas, Offset drawPos, Size? adjust) {
     Paint hpPaint = Paint()
-      ..color = Colors.redAccent.withOpacity(0.8)
+      ..color = Color(0xff04fd08).withOpacity(0.6)
       ..style = PaintingStyle.stroke
       ..style = PaintingStyle.fill
-      ..strokeWidth = GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1)
       ..isAntiAlias = true;
 
     // print('hp angle: ${base.hp * 360 / base.maxHp}  radians: ${base.hp * 360 / base.maxHp * pi / 180}');
-    canvas.drawArc(
-      Rect.fromCircle(
-        center: drawPos.adjust(adjust),
-        radius: GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1), // TODO: DRY
-      ), // TODO: adjusted
-      -90 * pi / 180,
-      -this.hp * 360 / this.maxHp * pi / 180,
-      true,
+
+    final hpRect = Rect.fromCenter(
+      center: drawPos.translate(0.0, -1 -GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1)).adjust(adjust),
+      width: GameConsts.UNIT_SIZE * 1.6 * (adjust?.shortestSide ?? 1),
+      height: 2 * (adjust?.shortestSide ?? 1),
+    );
+
+    canvas.drawRect(
+      Rect.fromLTRB(hpRect.left, hpRect.top, hpRect.left + hpRect.width * (this.hp / this.maxHp) , hpRect.bottom),
       hpPaint,
     );
+
+    // canvas.drawArc(
+    //   Rect.fromCircle(
+    //     center: drawPos.adjust(adjust),
+    //     radius: GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1), // TODO: DRY
+    //   ), // TODO: adjusted
+    //   -90 * pi / 180,
+    //   -this.hp * 360 / this.maxHp * pi / 180,
+    //   true,
+    //   hpPaint,
+    // );
   }
 
   void drawUnitAnimationState(Canvas canvas, List<Sprite> sprites, Offset drawPos, Size? adjust) {
