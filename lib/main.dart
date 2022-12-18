@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:wakelock/wakelock.dart';
 
 // TODO: init settings
-// TODO: disable rotation
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

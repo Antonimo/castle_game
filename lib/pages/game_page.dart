@@ -78,6 +78,7 @@ class _GamePageState extends State<GamePage> {
                   'assets/game_textures/floors/floor1.jpg',
                 repeat: ImageRepeat.repeat,
                 // alignment: Alignment.topLeft,
+                // width: MediaQuery.of(context).size.width * 0.66,
               ),
             ),
           ),
@@ -116,50 +117,50 @@ class _GamePageState extends State<GamePage> {
           ),
           // TODO: wrap dev outputs and use keys to redraw?
           // dev stats
-          Positioned(
-            left: 20.0,
-            child: Column(
-              children: [
-                Text(
-                  'game loop: ' + (_gameClient?.game?.running == true ? 'running' : 'stopped'),
-                ),
-              ],
-            ),
-          ),
+          // Positioned(
+          //   left: 20.0,
+          //   child: Column(
+          //     children: [
+          //       Text(
+          //         'game loop: ' + (_gameClient?.game?.running == true ? 'running' : 'stopped'),
+          //       ),
+          //     ],
+          //   ),
+          // ),
           // dev controls
-          Positioned(
-            top: 300.0,
-            child: ElevatedButton(
-              onPressed: () {
-                _gameClient?.game?.toggleGame();
-                print(
-                  'toggleGame: ' + (_gameClient?.game?.running == true ? 'running' : 'stopped'),
-                );
-                setState(() {});
-              },
-              child: Text('Toggle'),
-            ),
-          ),
-          Positioned(
-            top: 350.0,
-            child: ElevatedButton(
-              onPressed: () {
-                print('SAVE');
-                _gameClient?.saveState();
-              },
-              child: Text('Save'),
-            ),
-          ),
-          Positioned(
-            top: 400.0,
-            child: ElevatedButton(
-              onPressed: () {
-                print('Load');
-                _gameClient?.loadState();
-              },
-              child: Text('Load'),
-            ),
-          ),
+          // Positioned(
+          //   top: 300.0,
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       _gameClient?.game?.toggleGame();
+          //       print(
+          //         'toggleGame: ' + (_gameClient?.game?.running == true ? 'running' : 'stopped'),
+          //       );
+          //       setState(() {});
+          //     },
+          //     child: Text('Toggle'),
+          //   ),
+          // ),
+          // Positioned(
+          //   top: 350.0,
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       print('SAVE');
+          //       _gameClient?.saveState();
+          //     },
+          //     child: Text('Save'),
+          //   ),
+          // ),
+          // Positioned(
+          //   top: 400.0,
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       print('Load');
+          //       _gameClient?.loadState();
+          //     },
+          //     child: Text('Load'),
+          //   ),
+          // ),
         ],
       ),
     );

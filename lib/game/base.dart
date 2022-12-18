@@ -91,6 +91,7 @@ class Base {
     Offset drawPos = pos;
     drawCastleSprite(canvas, sprites, drawPos, adjust);
     drawHP(canvas, drawPos, adjust);
+    drawTrap(canvas, drawPos, adjust);
   }
 
   void drawCastleSprite(Canvas canvas, List<Sprite> sprites, Offset drawPos, Size? adjust) {
@@ -150,6 +151,44 @@ class Base {
       //   true,
       //   hpPaint,
       // );
+    }
+  }
+
+  void drawTrap(Canvas canvas, Offset drawPos, Size? adjust) {
+    final trapPos = drawPos.adjust(adjust);
+
+    if (hasTrap) {
+      final icon = Icons.star;
+      final iconSize = GameConsts.BASE_SIZE * 1.5;
+      TextPainter textPainter = TextPainter(
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center,
+      );
+      textPainter.text = TextSpan(
+        text: String.fromCharCode(icon.codePoint),
+        style: TextStyle(
+          fontSize: iconSize,
+          fontFamily: icon.fontFamily,
+          color: Colors.red,
+        ),
+      );
+      textPainter.layout();
+      textPainter.paint(canvas, trapPos.translate(-iconSize / 2, -iconSize / 2));
+    }
+
+    // Trap Active
+    if (trapActiveCooldown != null) {
+      Paint trapPaint = Paint()
+        ..color = Colors.red.withOpacity(0.7)
+        ..style = PaintingStyle.stroke
+        ..isAntiAlias = true
+        ..strokeWidth = (trapActiveCooldown! * 6) * (adjust?.shortestSide ?? 1);
+
+      canvas.drawCircle(
+        trapPos,
+        (GameConsts.BASE_SIZE + 16 - (trapActiveCooldown! * 6)) * (adjust?.shortestSide ?? 1), // TODO: DRY
+        trapPaint,
+      );
     }
   }
 
@@ -217,39 +256,5 @@ class Base {
     //   basePaint,
     // );
 
-    // // Has Trap
-    // if (base.hasTrap) {
-    //   final icon = Icons.star;
-    //   final iconSize = GameConsts.BASE_SIZE;
-    //   TextPainter textPainter = TextPainter(
-    //     textDirection: TextDirection.ltr,
-    //     textAlign: TextAlign.center,
-    //   );
-    //   textPainter.text = TextSpan(
-    //     text: String.fromCharCode(icon.codePoint),
-    //     style: TextStyle(
-    //       fontSize: iconSize,
-    //       fontFamily: icon.fontFamily,
-    //       color: Colors.red,
-    //     ),
-    //   );
-    //   textPainter.layout();
-    //   textPainter.paint(canvas, pos.translate(-iconSize / 2, -iconSize / 2));
-    // }
-    //
-    // // Trap Active
-    // if (base.trapActiveCooldown != null) {
-    //   Paint trapPaint = Paint()
-    //     ..color = Colors.red.withOpacity(0.7)
-    //     ..style = PaintingStyle.stroke
-    //     ..isAntiAlias = true
-    //     ..strokeWidth = (base.trapActiveCooldown! * 6) * (adjust?.shortestSide ?? 1);
-    //
-    //   canvas.drawCircle(
-    //     pos,
-    //     (GameConsts.BASE_SIZE + 16 - (base.trapActiveCooldown! * 6)) * (adjust?.shortestSide ?? 1), // TODO: DRY
-    //     trapPaint,
-    //   );
-    // }
   }
 }

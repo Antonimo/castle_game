@@ -15,16 +15,18 @@ class MenuPage extends StatelessWidget {
           children: [
             SizedBox(height: 32.0),
             ElevatedButton(
-              onPressed: () {
-                AppRouter.instance.navTo(AppRouter.routeHost);
-              },
+              onPressed: null,
+              // onPressed: () {
+              //   AppRouter.instance.navTo(AppRouter.routeHost);
+              // },
               child: const Text('Host Online Game'),
             ),
             SizedBox(height: 32.0),
             ElevatedButton(
-              onPressed: () {
-                AppRouter.instance.navTo(AppRouter.routeJoin);
-              },
+              onPressed: null,
+              // onPressed: () {
+              //   AppRouter.instance.navTo(AppRouter.routeJoin);
+              // },
               child: const Text('Join Online Game'),
             ),
             SizedBox(height: 32.0),

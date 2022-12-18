@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:castle_game/game/base.dart';
@@ -127,23 +126,28 @@ class GamePainter extends CustomPainter {
   void drawItem(Canvas canvas, Item item, Size? adjust) {
     final pos = item.pos.adjust(adjust);
 
-    Paint itemPaint = Paint()
-      ..color = Colors.black38
+    Paint itemPaintBg = Paint()
+      ..color = Colors.black45
+      ..style = PaintingStyle.fill
+      ..isAntiAlias = true;
+
+    Paint itemPaintBorder = Paint()
+      ..color = Color(0xfff2ae08)
       ..style = PaintingStyle.stroke
       ..isAntiAlias = true
       ..strokeWidth = 1.5; // TODO: adjusted
 
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromCenter(
-          center: pos,
-          height: GameConsts.POWERUP_SIZE * 2,
-          width: GameConsts.POWERUP_SIZE * 2,
-        ),
-        Radius.circular(3.0),
+    final itemRect = RRect.fromRectAndRadius(
+      Rect.fromCenter(
+        center: pos,
+        height: GameConsts.POWERUP_SIZE * 2,
+        width: GameConsts.POWERUP_SIZE * 2,
       ),
-      itemPaint,
+      Radius.circular(3.0),
     );
+
+    canvas.drawRRect(itemRect, itemPaintBg);
+    canvas.drawRRect(itemRect, itemPaintBorder);
 
     final IconData icon = Item.icons[item.type]!;
 
