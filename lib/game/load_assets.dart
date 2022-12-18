@@ -9,6 +9,7 @@ import 'package:image/image.dart' as image;
 
 Future<void> loadAssets(Game game) async {
   await loadCharacterSprites(game);
+  await loadCastlesSprites(game);
 }
 
 Future<void> loadCharacterSprites(Game game) async {
@@ -61,6 +62,32 @@ Future<void> loadCharacterSprite(Game game, String path, String collectionName) 
   }
 
   game.assets[collectionName] = unitSprites;
+}
+
+Future<void> loadCastlesSprites(Game game) async {
+  await loadCastleSprite(game, 'assets/game_textures/castles/castle1.png', 'castle1');
+  await loadCastleSprite(game, 'assets/game_textures/castles/castle2.png', 'castle2');
+}
+
+Future<void> loadCastleSprite(Game game, String path, String collectionName) async {
+  image.Image? castleSpriteImage = await loadImage(path);
+
+  if (castleSpriteImage == null) {
+    // TODO: critical errors handling
+    throw Exception('Failed to load assets.');
+  }
+
+  final List<Sprite> castleSprites = [];
+
+  castleSprites.add(await Sprite.fromImage(
+    castleSpriteImage,
+    ui.Size(
+      GameConsts.BASE_SIZE * 4 * (game.adjust?.shortestSide ?? 1),
+      GameConsts.BASE_SIZE * 4 * (game.adjust?.shortestSide ?? 1),
+    ),
+  ));
+
+  game.assets[collectionName] = castleSprites;
 }
 
 Future<image.Image?> loadImage(String imageAssetPath) async {

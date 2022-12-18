@@ -11,6 +11,14 @@ class Sprite {
 
   Sprite(this.image, this.imageFrame, this.frame, this.size);
 
+  static Future<Sprite> fromImage(imageLib.Image image, Size size) async {
+    imageLib.Image resizedImage = imageLib.copyResize(image, width: size.width.toInt(), height: size.height.toInt());
+
+    Image imageFrame = await getImageFrame(resizedImage);
+
+    return Sprite(resizedImage, imageFrame, Rect.fromLTRB(0, 0, size.width, size.height), size);
+  }
+
   static Future<Sprite> cropFromImage(imageLib.Image image, Rect frame, Size size) async {
     imageLib.Image croppedImage = imageLib.copyCrop(image, frame.left.toInt(), frame.top.toInt(), frame.width.toInt(), frame.height.toInt());
 

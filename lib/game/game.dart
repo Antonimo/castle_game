@@ -193,6 +193,7 @@ class Game {
         players[0].id,
         Offset(gameSize.width / 2, 85 * gameSize.height / 100),
         players[0].color,
+        'castle1',
       ),
     );
     bases.add(
@@ -200,6 +201,7 @@ class Game {
         players[1].id,
         Offset(gameSize.width / 2, 15 * gameSize.height / 100),
         players[1].color,
+        'castle2',
       ),
     );
 

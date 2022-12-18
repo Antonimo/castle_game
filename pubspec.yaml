@@ -58,6 +58,7 @@ flutter:
   assets:
     - assets/game_textures/floors/
     - assets/game_textures/chars/
+    - assets/game_textures/castles/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

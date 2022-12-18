@@ -82,102 +82,10 @@ class GamePainter extends CustomPainter {
   }
 
   void drawBase(Canvas canvas, Base base, Size? adjust) {
-    final pos = base.pos.adjust(adjust);
+    final sprite = this.game.assets[base.spritesCollectionName];
 
-    // HP
-    Paint hpPaint = Paint()
-      ..color = Colors.redAccent.withOpacity(0.8)
-      ..style = PaintingStyle.stroke
-      ..style = PaintingStyle.fill
-      ..strokeWidth = GameConsts.BASE_SIZE // TODO: adjusted
-      ..isAntiAlias = true;
-
-    // print('hp angle: ${base.hp * 360 / base.maxHp}  radians: ${base.hp * 360 / base.maxHp * pi / 180}');
-
-    canvas.drawArc(
-      // TODO: adjust sizes of all elements too.
-      Rect.fromCircle(
-        center: pos,
-        radius: GameConsts.BASE_SIZE * (adjust?.shortestSide ?? 1),
-      ),
-      -90 * pi / 180,
-      -base.hp * 360 / base.maxHp * pi / 180,
-      true,
-      hpPaint,
-    );
-
-    if (base.hp > base.maxHp) {
-      // Extra HP
-      Paint hpPaint = Paint()
-        ..color = Colors.purple.withOpacity(0.8)
-        ..style = PaintingStyle.stroke
-        ..style = PaintingStyle.fill
-        ..strokeWidth = GameConsts.BASE_SIZE // TODO: adjusted
-        ..isAntiAlias = true;
-
-      // print('hp angle: ${base.hp * 360 / base.maxHp}  radians: ${base.hp * 360 / base.maxHp * pi / 180}');
-
-      final extraHp = base.maxHp - base.hp;
-
-      canvas.drawArc(
-        // TODO: adjust sizes of all elements too.
-        Rect.fromCircle(
-          center: pos,
-          radius: GameConsts.BASE_SIZE * (adjust?.shortestSide ?? 1),
-        ),
-        -90 * pi / 180,
-        -extraHp * 360 / base.maxHp * pi / 180,
-        true,
-        hpPaint,
-      );
-    }
-
-    // Border
-    Paint basePaint = Paint()
-      ..color = base.color
-      ..style = PaintingStyle.stroke
-      ..isAntiAlias = true
-      ..strokeWidth = 3.0 * (adjust?.shortestSide ?? 1);
-
-    canvas.drawCircle(
-      pos,
-      GameConsts.BASE_SIZE * (adjust?.shortestSide ?? 1), // TODO: DRY
-      basePaint,
-    );
-
-    // Has Trap
-    if (base.hasTrap) {
-      final icon = Icons.star;
-      final iconSize = GameConsts.BASE_SIZE;
-      TextPainter textPainter = TextPainter(
-        textDirection: TextDirection.ltr,
-        textAlign: TextAlign.center,
-      );
-      textPainter.text = TextSpan(
-        text: String.fromCharCode(icon.codePoint),
-        style: TextStyle(
-          fontSize: iconSize,
-          fontFamily: icon.fontFamily,
-          color: Colors.red,
-        ),
-      );
-      textPainter.layout();
-      textPainter.paint(canvas, pos.translate(-iconSize / 2, -iconSize / 2));
-    }
-
-    // Trap Active
-    if (base.trapActiveCooldown != null) {
-      Paint trapPaint = Paint()
-        ..color = Colors.red.withOpacity(0.7)
-        ..style = PaintingStyle.stroke
-        ..isAntiAlias = true
-        ..strokeWidth = (base.trapActiveCooldown! * 6) * (adjust?.shortestSide ?? 1);
-
-      canvas.drawCircle(
-        pos,
-        (GameConsts.BASE_SIZE + 16 - (base.trapActiveCooldown! * 6)) * (adjust?.shortestSide ?? 1), // TODO: DRY
-        trapPaint,
-      );
+    if (sprite != null) {
+      base.draw(canvas, sprite, adjust);
     }
   }
 
