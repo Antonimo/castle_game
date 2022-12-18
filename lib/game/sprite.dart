@@ -18,7 +18,15 @@ class Sprite {
 
     Image imageFrame = await getImageFrame(resizedImage);
 
-    return Sprite(image, imageFrame, frame, size);
+    return Sprite(resizedImage, imageFrame, frame, size);
+  }
+
+  static Future<Sprite> flip(Sprite sprite) async {
+    imageLib.Image flippedImage = imageLib.flipHorizontal(sprite.image);
+
+    Image imageFrame = await getImageFrame(flippedImage);
+
+    return Sprite(flippedImage, imageFrame, sprite.frame, sprite.size);
   }
 
   void draw(Canvas canvas, Offset drawPos, Paint paint) {

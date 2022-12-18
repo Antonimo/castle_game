@@ -54,6 +54,8 @@ class GamePainter extends CustomPainter {
       drawLine(canvas);
       drawRemainingDistanceIndicator(canvas, size, game.getDrawRemainingDistance());
     }
+
+    // debugDrawSprites(canvas, game.adjust);
   }
 
   void drawLine(Canvas canvas) {
@@ -194,7 +196,7 @@ class GamePainter extends CustomPainter {
 
   void drawUnit(Canvas canvas, Unit unit, Size? adjust) {
     // TODO: use enum? map?
-    unit.draw(canvas, this.game.assets['unit']!, adjust);
+    unit.draw(canvas, this.game.assets['unit1']!, adjust);
   }
 
   void drawPendingUnit(Canvas canvas, Unit unit, Size? adjust) {
@@ -247,6 +249,25 @@ class GamePainter extends CustomPainter {
     );
     textPainter.layout();
     textPainter.paint(canvas, pos.translate(-GameConsts.POWERUP_SIZE, -GameConsts.POWERUP_SIZE));
+  }
+
+  void debugDrawSprites(Canvas canvas, Size? adjust) {
+    var x = 20.0;
+
+    Paint unitSpritePaint = Paint();
+
+    this.game.assets.forEach((key, asset) {
+      var y = 20.0;
+
+      asset.forEach((sprite) {
+
+        sprite.draw(canvas, Offset(x, y).adjust(adjust), unitSpritePaint);
+
+        y += sprite.imageFrame.height + 2;
+      });
+
+      x += asset[0].imageFrame.width + 2;
+    });
   }
 
   @override

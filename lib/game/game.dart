@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image/image.dart' as image;
+import 'package:castle_game/game/load_assets.dart';
+import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
 
 import 'package:castle_game/game/base.dart';
@@ -119,7 +119,7 @@ class Game {
 
     canDrawPath = false;
 
-    loadAssets().then((_) {
+    loadAssets(this).then((_) {
       // TODO: loading state?
 
       toggleGame();
@@ -137,56 +137,6 @@ class Game {
       gameSize.width / size.width,
       gameSize.height / size.height,
     );
-  }
-
-  Future<void> loadAssets() async {
-    // load character sprites
-
-    image.Image? unitSpritesImage = await loadImage("assets/game_textures/chars/8 walk.png");
-
-    if (unitSpritesImage == null) {
-      // TODO: critical errors handling
-      throw Exception('Failed to load assets.');
-    }
-
-    // print('unitSpritesImage: ${unitSpritesImage.width} ${unitSpritesImage.height}');
-
-    const spriteSize = Size(16, 16);
-    const spriteColumns = 3;
-    const spriteRows = 4;
-
-    // create a map of Sprites from the image, using coordinates on the image
-
-    final List<Sprite> unitSprites = [];
-
-    for (var col = 0; col < spriteColumns; col++) {
-      for (var row = 0; row < spriteRows; row++) {
-        unitSprites.add(
-          await Sprite.cropFromImage(
-            unitSpritesImage,
-            Rect.fromLTWH(col * spriteSize.width, row * spriteSize.height, spriteSize.width, spriteSize.height),
-            Size(
-              GameConsts.UNIT_SIZE * 2 * (adjust?.shortestSide ?? 1),
-              GameConsts.UNIT_SIZE * 2 * (adjust?.shortestSide ?? 1),
-            ),
-          ),
-        );
-      }
-    }
-
-    // add left facing animation by flipping the right facing animation
-
-    // final unitSpritesImageBytes = await unitSpritesImage.toByteData();
-    // if (unitSpritesImageBytes != null) {
-    //   image.Image? unitSpritesImageImage = image.decodeImage(unitSpritesImageBytes.buffer.asUint8List());
-    // }
-
-    this.assets['unit'] = unitSprites;
-  }
-
-  Future<image.Image?> loadImage(String imageAssetPath) async {
-    final ByteData assetImageByteData = await rootBundle.load(imageAssetPath);
-    return image.decodeImage(assetImageByteData.buffer.asUint8List());
   }
 
   void resetGame() {
