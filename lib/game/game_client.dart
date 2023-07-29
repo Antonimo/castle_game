@@ -3,6 +3,7 @@ import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game.dart';
 import 'package:castle_game/game/player.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 ///
 /// Base Class for the game client
@@ -38,8 +39,10 @@ class GameClient {
             TextButton(
               child: const Text('Close'),
               onPressed: () {
-                AppRouter.instance.navBack(); // Close this popup
-                AppRouter.instance.navBack(); // Close game page, go back to lobby
+                context.pop();
+                context.pop();
+                // AppRouter.instance.navBack(); // Close this popup
+                // AppRouter.instance.navBack(); // Close game page, go back to lobby
               },
             ),
           ],

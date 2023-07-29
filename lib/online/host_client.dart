@@ -12,7 +12,9 @@ import 'package:castle_game/online/online_player.dart';
 import 'package:castle_game/util/logger.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class HostClient extends GameClient {
@@ -24,6 +26,7 @@ class HostClient extends GameClient {
 
   static HostClient? get instance => _instance;
 
+  // TODO: refactor - same in JoinClient
   static void init() {
     // create client singleton
     _instance = HostClient._privateConstructor();
@@ -66,7 +69,7 @@ class HostClient extends GameClient {
     });
 
     socket!.on('gameState', (gameState) {
-      // Log.i(TAG, 'gameState');
+      Log.i(TAG, 'gameState');
       // Log.i(TAG, gameState);
 
       setGameState(gameState);
@@ -159,13 +162,24 @@ class HostClient extends GameClient {
       _game!.playing = gameState['playing'];
       if (_game!.playing) {
         _game!.resetGame();
-        AppRouter.instance.navTo(AppRouter.routeGame, arguments: {'gameClient': this});
+        // AppRouter.instance.navTo(AppRouter.routeGame, arguments: {'gameClient': this});
+
+        GoRouter.of(AppRouter.appNavigatorKey.currentContext!).push('/game', extra: {'gameClient': this});
+
         initPlayingGameStateBroadcastLoop();
       }
     }
 
     stateSubject.add(0.0);
     _game!.setState();
+  }
+
+  void invite() {
+    // TODO: throttle? loading? disable button?
+    socket?.emitWithAck('invite', null, ack: (response) {
+      Log.i(TAG, 'invite() response:' + response.toString());
+      Share.share('${AppConsts.APP_URL}/join?inviteToken=$response');
+    });
   }
 
   void ready() {

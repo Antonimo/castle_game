@@ -1,5 +1,6 @@
 import 'package:castle_game/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class MenuPage extends StatelessWidget {
   const MenuPage({Key? key}) : super(key: key);
@@ -15,27 +16,27 @@ class MenuPage extends StatelessWidget {
           children: [
             SizedBox(height: 32.0),
             ElevatedButton(
-              onPressed: null,
-              // onPressed: () {
-              //   AppRouter.instance.navTo(AppRouter.routeHost);
-              // },
-              child: const Text('Host Online Game'),
+              onPressed: () {
+                // TODO: refactor routing paths and names
+                context.go('/host');
+              },
+              child: const Text('Host 1v1 Online Game'),
             ),
             SizedBox(height: 32.0),
             ElevatedButton(
-              onPressed: null,
-              // onPressed: () {
-              //   AppRouter.instance.navTo(AppRouter.routeJoin);
-              // },
-              child: const Text('Join Online Game'),
+              onPressed: () {
+                context.go('/join');
+              },
+              child: const Text('Join 1v1 Online Game'),
             ),
             SizedBox(height: 32.0),
             SizedBox(height: 8.0),
             ElevatedButton(
               onPressed: () {
-                AppRouter.instance.navTo(AppRouter.routeMultiplayer);
+                // TODO: rename multiplayer to something like onDevice2Players
+                context.go('/multiplayer');
               },
-              child: const Text('Local Multiplayer'),
+              child: const Text('Play 1v1 on this device'),
             ),
           ],
         ),

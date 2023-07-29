@@ -76,6 +76,16 @@ class _HostPageState extends State<HostPage> {
 
       items.addAll([
         Text('waiting for player2'),
+        SizedBox(height: 32.0),
+        ElevatedButton.icon(
+          onPressed: () {
+            HostClient.instance!.invite();
+          },
+          icon: Icon(
+            Icons.share,
+          ),
+          label: const Text('Invite'),
+        ),
       ]);
       return items;
     }

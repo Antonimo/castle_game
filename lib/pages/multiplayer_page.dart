@@ -54,7 +54,7 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
 
           // TODO: pause game, restart game;
         },
-        child: const Text('Start Game'),
+        child: const Text('Play!'),
       ),
     ];
   }

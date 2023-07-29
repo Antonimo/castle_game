@@ -11,6 +11,7 @@ import 'package:castle_game/game/unit.dart';
 import 'package:castle_game/util/logger.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -26,9 +27,12 @@ class JoinClient extends GameClient {
 
   static JoinClient? get instance => _instance;
 
-  static void init() {
+  static void init(String? inviteToken) {
     // create client singleton
     _instance = JoinClient._privateConstructor();
+
+    _instance!.createGame();
+    _instance!.inviteToken = inviteToken;
   }
 
   static void join(String gameId) {
@@ -36,9 +40,12 @@ class JoinClient extends GameClient {
   }
 
   static void dispose() {
+    Log.i(TAG, 'dispose()');
     _instance!._dispose();
     _instance = null;
   }
+
+  String? inviteToken;
 
   Subject<double> stateSubject = BehaviorSubject<double>();
 
@@ -51,18 +58,10 @@ class JoinClient extends GameClient {
 
   int lastPlayingGameStateTime = 0;
 
-  void joinGame(String gameId) {
+  void createGame() {
     _game = Game();
-
-    _game!.id = gameId;
-
-    _game!.player = 'p2';
-
-    Log.i(TAG, 'joinGame() game id: $gameId');
-
+    _game!.player = 'p2'; // TODO: players ids system
     connect();
-
-    stateSubject.add(0.0);
   }
 
   void connect() {
@@ -75,9 +74,15 @@ class JoinClient extends GameClient {
 
     socket!.onConnect((_) {
       print('socket!.onConnect: ${socket?.id}');
-      print('emit( joinGame, ${_game?.id} )');
+      // TODO: emit player username?
 
-      socket!.emit('joinGame', _game?.id);
+      // print('emit( joinGame, ${_game?.id} )');
+
+      // socket!.emit('joinGame', _game?.id);
+
+      if (inviteToken != null) {
+        acceptInvite(inviteToken!);
+      }
     });
 
     socket!.on('gameState', (gameState) {
@@ -140,6 +145,26 @@ class JoinClient extends GameClient {
     socket!.connect();
   }
 
+
+  void joinGame(String gameId) {
+    // TODO: fix joining
+    return;
+    Log.i(TAG, 'joinGame() game id: $gameId');
+
+    // _game = Game();
+    // _game!.id = gameId;
+
+    _game!.player = 'p2';
+
+
+    stateSubject.add(0.0);
+  }
+
+  void acceptInvite(String inviteToken) {
+    Log.i(TAG, 'acceptInvite() inviteToken: $inviteToken');
+    socket!.emit('acceptInvite', inviteToken);
+  }
+
   // TODO: add 'game does not exist' error
   // TODO: gameState interface
   void setGameState(dynamic gameState) {
@@ -172,7 +197,9 @@ class JoinClient extends GameClient {
       _game!.playing = gameState['playing'];
       if (_game!.playing) {
         _game!.resetGame();
-        AppRouter.instance.navTo(AppRouter.routeGame, arguments: {'gameClient': this});
+        // AppRouter.instance.navTo(AppRouter.routeGame, arguments: {'gameClient': this});
+
+        GoRouter.of(AppRouter.appNavigatorKey.currentContext!).push('/game', extra: {'gameClient': this});
       }
 
       // TODO: show game over here?

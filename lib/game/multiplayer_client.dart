@@ -12,6 +12,7 @@ import 'package:castle_game/game/unit.dart';
 import 'package:castle_game/util/logger.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -56,7 +57,10 @@ class MultiplayerClient extends GameClient {
 
     stateSubject.add(0.0);
 
-    AppRouter.instance.navTo(AppRouter.routeGame, arguments: {'gameClient': this});
+    // AppRouter.instance.navTo(AppRouter.routeGame, arguments: {'gameClient': this});
+
+    // TODO: refactor
+    GoRouter.of(AppRouter.appNavigatorKey.currentContext!).push('/game', extra: {'gameClient': this});
   }
 
   void initGame(Size size) {

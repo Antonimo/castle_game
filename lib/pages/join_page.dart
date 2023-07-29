@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class JoinPage extends StatefulWidget {
-  const JoinPage({Key? key}) : super(key: key);
+  final String? inviteToken;
+
+  const JoinPage({Key? key, this.inviteToken} ) : super(key: key);
 
   @override
   _JoinPageState createState() => _JoinPageState();
@@ -12,12 +14,13 @@ class JoinPage extends StatefulWidget {
 
 class _JoinPageState extends State<JoinPage> {
   final gameIdController = TextEditingController();
+  final inviteTokenController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
 
-    JoinClient.init();
+    JoinClient.init(widget.inviteToken);
   }
 
   @override
@@ -110,6 +113,27 @@ class _JoinPageState extends State<JoinPage> {
         },
         child: const Text('Join'),
       ),
+      SizedBox(height: 32.0),
+      // Debug
+      // SizedBox(height: 32.0),
+      // Container(
+      //   width: 100.0,
+      //   child: TextField(
+      //     controller: inviteTokenController,
+      //     decoration: const InputDecoration(
+      //       border: OutlineInputBorder(),
+      //     ),
+      //     keyboardType: TextInputType.number,
+      //     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      //   ),
+      // ),
+      // SizedBox(height: 32.0),
+      // ElevatedButton(
+      //   onPressed: () {
+      //     JoinClient.instance?.acceptInvite(inviteTokenController.text);
+      //   },
+      //   child: const Text('acceptInvite'),
+      // ),
     ];
   }
 }
