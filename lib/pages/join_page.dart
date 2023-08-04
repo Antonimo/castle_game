@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 class JoinPage extends StatefulWidget {
   final String? inviteToken;
 
-  const JoinPage({Key? key, this.inviteToken} ) : super(key: key);
+  const JoinPage({Key? key, this.inviteToken}) : super(key: key);
 
   @override
   _JoinPageState createState() => _JoinPageState();

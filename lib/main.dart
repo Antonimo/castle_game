@@ -6,8 +6,8 @@ import 'package:castle_game/pages/menu_page.dart';
 import 'package:castle_game/pages/multiplayer_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wakelock/wakelock.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wakelock/wakelock.dart';
 
 // TODO: init settings
 

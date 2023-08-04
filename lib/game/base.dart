@@ -43,7 +43,7 @@ class Base {
       Offset.zero.fromJson(playState['pos']).flip(flipCoords),
       Color(playState['color']),
       // TODO: get sprite name
-      'castle1'
+      'castle1',
     );
     base.maxHp = (playState['maxHp'] as num).toDouble();
     base.hp = (playState['hp'] as num).toDouble();
@@ -255,6 +255,5 @@ class Base {
     //   GameConsts.BASE_SIZE * (adjust?.shortestSide ?? 1), // TODO: DRY
     //   basePaint,
     // );
-
   }
 }

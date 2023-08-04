@@ -75,7 +75,7 @@ class _GamePageState extends State<GamePage> {
             child: Container(
               color: Colors.black,
               child: Image.asset(
-                  'assets/game_textures/floors/floor1.jpg',
+                'assets/game_textures/floors/floor1.jpg',
                 repeat: ImageRepeat.repeat,
                 // alignment: Alignment.topLeft,
                 // width: MediaQuery.of(context).size.width * 0.66,

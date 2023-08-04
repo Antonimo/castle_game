@@ -28,7 +28,7 @@ class _HostPageState extends State<HostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Host Online Game'),
+        title: const Text('Host 1v1 Online Game'),
       ),
       body: StreamBuilder<double>(
         // TODO: use separate streams for lobby and for game, so that the lobby pages in the background would not redraw on updares

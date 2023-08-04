@@ -7,7 +7,6 @@ import 'package:castle_game/game/game_consts.dart';
 import 'package:castle_game/game/unit.dart';
 import 'package:castle_game/util/json_offset.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 import 'item.dart';
 
@@ -176,7 +175,6 @@ class GamePainter extends CustomPainter {
       var y = 20.0;
 
       asset.forEach((sprite) {
-
         sprite.draw(canvas, Offset(x, y).adjust(adjust), unitSpritePaint);
 
         y += sprite.imageFrame.height + 2;

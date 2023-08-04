@@ -1,20 +1,18 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui' as ui;
-import 'package:castle_game/game/numbers.dart';
-import 'package:image/image.dart' as image;
-import 'package:castle_game/game/load_assets.dart';
-import 'package:flutter/material.dart';
-import 'package:rxdart/subjects.dart';
 
 import 'package:castle_game/game/base.dart';
 import 'package:castle_game/game/drawn_line.dart';
 import 'package:castle_game/game/game_consts.dart';
 import 'package:castle_game/game/item.dart';
+import 'package:castle_game/game/load_assets.dart';
+import 'package:castle_game/game/numbers.dart';
 import 'package:castle_game/game/player.dart';
 import 'package:castle_game/game/sprite.dart';
 import 'package:castle_game/game/unit.dart';
 import 'package:castle_game/util/typedef.dart';
+import 'package:flutter/material.dart';
+import 'package:rxdart/subjects.dart';
 
 class Game {
   static const String TAG = '[Game] ';
@@ -123,7 +121,7 @@ class Game {
     canDrawPath = false;
 
     // Select random distinct sprite collection for each player
-    playerSpritesIndexes = getTwoRandomDistinctNumbers();
+    if (playerSpritesIndexes.isEmpty) playerSpritesIndexes = getTwoRandomDistinctNumbers();
 
     // TODO: load assets async? while showing loading animation?
     loadAssets(this).then((_) {

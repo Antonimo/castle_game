@@ -145,7 +145,6 @@ class JoinClient extends GameClient {
     socket!.connect();
   }
 
-
   void joinGame(String gameId) {
     // TODO: fix joining
     return;
@@ -155,7 +154,6 @@ class JoinClient extends GameClient {
     // _game!.id = gameId;
 
     _game!.player = 'p2';
-
 
     stateSubject.add(0.0);
   }
@@ -174,6 +172,13 @@ class JoinClient extends GameClient {
     // TODO: if no game, clear everything and go back to main menu?
 
     Log.i(TAG, 'setGameState() current game id: ${_game!.id}  gameState: ${gameState['id']}');
+
+    if (gameState['playingState'] != null) {
+      if (gameState['playingState']['playerSpritesIndexes'] != null) {
+        _game!.playerSpritesIndexes = gameState['playingState']['playerSpritesIndexes'].cast<int>();
+      }
+    }
+    // TODO: if assets of playerSpritesIndexes are not loaded, load them now?
 
     if (_game!.id == null) {
       _game!.id = gameState['id'];

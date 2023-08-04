@@ -18,7 +18,6 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
 
   @override
   void dispose() {
-    print('MultiplayerClient.dispose()');
     MultiplayerClient.dispose();
 
     super.dispose();

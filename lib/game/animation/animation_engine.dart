@@ -12,6 +12,7 @@ class AnimationEngine {
   GameAnimation? animation;
 
   int currentSprite = 0;
+
   // the sprites for current animation
   List<Sprite> sprites = [];
 

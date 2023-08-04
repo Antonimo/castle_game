@@ -16,6 +16,7 @@ import 'package:go_router/go_router.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import '../game/numbers.dart';
 
 class HostClient extends GameClient {
   static const String TAG = '[HostClient] ';
@@ -52,6 +53,7 @@ class HostClient extends GameClient {
   void createGame() {
     _game = Game();
     _game!.player = 'p1'; // TODO: players ids system
+    _game!.playerSpritesIndexes = getTwoRandomDistinctNumbers();
     connect();
   }
 
@@ -64,14 +66,22 @@ class HostClient extends GameClient {
     );
 
     socket!.onConnect((_) {
+      // TODO: replace prints with Log
       print('socket!.onConnect: ${socket?.id}');
       socket!.emit('createGame');
+    });
+
+    socket!.on('gameCreated', (_) {
+      Log.i(TAG, 'gameCreated');
+      emitPlayingGameState();
     });
 
     socket!.on('gameState', (gameState) {
       Log.i(TAG, 'gameState');
       // Log.i(TAG, gameState);
 
+      // TODO: why host would set game state?
+      // for starting game when 2 players are ready?
       setGameState(gameState);
     });
 
@@ -183,6 +193,7 @@ class HostClient extends GameClient {
   }
 
   void ready() {
+    // TODO: why?
     _game!.resetGame();
     emitPlayingGameState();
     socket?.emit('ready');
@@ -237,12 +248,14 @@ class HostClient extends GameClient {
     socket?.emit('playingGameState', buildPlayingGameState());
   }
 
+  // TODO: DRY?
   Map buildPlayingGameState() {
     Map playingGameState = {
       // 'size': _game!.size?.toJson(),
       'id': _game!.id,
       // TODO: use relative game time, how much time elapsed
       'time': DateTime.now().millisecondsSinceEpoch,
+      'playerSpritesIndexes': _game!.playerSpritesIndexes,
       'players': [],
       'bases': [],
       'units': [],

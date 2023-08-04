@@ -35,6 +35,7 @@ class Player {
       'nextUnitCooldown': nextUnitCooldown,
       'pendingUnit': pendingUnit?.toPlayState(),
       'unitSpeed': unitSpeed,
+      'unitsSpritesCollectionName': unitsSpritesCollectionName,
     };
   }
 
@@ -44,8 +45,7 @@ class Player {
       playState['name'],
       Color(playState['color']),
       Offset.zero.fromJson(playState['startPos']).flip(flipCoords),
-      // TODO: get the sprite name
-      'unit1',
+      playState['unitsSpritesCollectionName'],
     );
     if (playState['nextUnitCooldown'] != null) {
       player.nextUnitCooldown = (playState['nextUnitCooldown'] as num).toDouble();

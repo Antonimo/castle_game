@@ -18,6 +18,7 @@ class Unit {
   double facingDirection = 0;
 
   // TODO: base game type that has pos
+  // TODO: network - send engagedTarget for better gameState sync
   dynamic engagedTarget;
 
   AnimationEngine animation = AnimationEngine();
@@ -36,6 +37,7 @@ class Unit {
 
   String spritesCollectionName;
 
+  // TODO: add unit id / name ?
   Unit(this.player, this.color, this.pos, this.spritesCollectionName) {
     initDefaultAnimation();
   }
@@ -56,6 +58,7 @@ class Unit {
       'speed': speed,
       'moving': moving,
       'cooldown': cooldown,
+      'spritesCollectionName': spritesCollectionName,
     };
   }
 
@@ -66,8 +69,7 @@ class Unit {
       playState['player'],
       Color(playState['color']),
       Offset.zero.fromJson(playState['pos']).flip(flipCoords),
-      // TODO: get sprite name
-      '',
+      playState['spritesCollectionName'],
     );
     unit.path = DrawnLine.fromPlayState(playState['path'], flipCoords: flipCoords);
     unit.maxHp = double.parse(playState['maxHp'].toString());
@@ -232,13 +234,13 @@ class Unit {
     // print('hp angle: ${base.hp * 360 / base.maxHp}  radians: ${base.hp * 360 / base.maxHp * pi / 180}');
 
     final hpRect = Rect.fromCenter(
-      center: drawPos.translate(0.0, -1 -GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1)).adjust(adjust),
+      center: drawPos.translate(0.0, -1 - GameConsts.UNIT_SIZE * (adjust?.shortestSide ?? 1)).adjust(adjust),
       width: GameConsts.UNIT_SIZE * 1.6 * (adjust?.shortestSide ?? 1),
       height: 2 * (adjust?.shortestSide ?? 1),
     );
 
     canvas.drawRect(
-      Rect.fromLTRB(hpRect.left, hpRect.top, hpRect.left + hpRect.width * (this.hp / this.maxHp) , hpRect.bottom),
+      Rect.fromLTRB(hpRect.left, hpRect.top, hpRect.left + hpRect.width * (this.hp / this.maxHp), hpRect.bottom),
       hpPaint,
     );
 
